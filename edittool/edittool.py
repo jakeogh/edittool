@@ -163,6 +163,7 @@ def edit(ctx,
 
     path = Path(os.fsdecode(path))
     editor = os.getenv('EDITOR')
+    edito = os.getenv('EDITO')
 
     if verbose:
         ic(editor, path)
