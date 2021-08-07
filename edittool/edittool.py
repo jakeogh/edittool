@@ -123,6 +123,10 @@ def cli(ctx,
 @click.pass_context
 def edit(ctx,
          paths: Optional[tuple[str]],
+         apps_folder: str,
+         gentoo_overlay_repo: str,
+         github_user: str,
+         license: str,
          verbose: bool,
          debug: bool,
          ):
