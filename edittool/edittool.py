@@ -69,11 +69,7 @@ from asserttool import nevd
 from asserttool import not_root
 from asserttool import validate_slice
 from asserttool import verify
-#from collections import defaultdict
-#from prettyprinter import cpprint
-#from prettyprinter import install_extras
-#install_extras(['attrs'])
-#from timetool import get_timestamp
+from click_default_group import DefaultGroup
 from configtool import click_read_config
 from configtool import click_write_config_entry
 from enumerate_input import enumerate_input
@@ -82,11 +78,8 @@ from retry_on_exception import retry_on_exception
 #from with_sshfs import sshfs
 from with_chdir import chdir
 
-#from pathtool import path_is_block_special
 #from pathtool import write_line_to_file
 #from getdents import files
-#from prettytable import PrettyTable
-#output_table = PrettyTable()
 
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
@@ -103,8 +96,23 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 ic(CFG)
 
+@click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
+@click.option('--verbose', is_flag=True)
+@click.option('--debug', is_flag=True)
+@click.pass_context
+def cli(ctx,
+        verbose: bool,
+        debug: bool,
+        ):
 
-@click.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
+    null, end, verbose, debug = nevd(ctx=ctx,
+                                     printn=False,
+                                     ipython=False,
+                                     verbose=verbose,
+                                     debug=debug,)
+
+
+@cli.command()
 @click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
@@ -113,11 +121,11 @@ ic(CFG)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.pass_context
-def cli(ctx,
-        paths: Optional[tuple[str]],
-        verbose: bool,
-        debug: bool,
-        ):
+def edit(ctx,
+         paths: Optional[tuple[str]],
+         verbose: bool,
+         debug: bool,
+         ):
 
     null, end, verbose, debug = nevd(ctx=ctx,
                                      printn=False,
