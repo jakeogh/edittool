@@ -113,7 +113,7 @@ def cli(ctx,
 
 
 @cli.command()
-@click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
+@click.argument("path", type=click.Path(path_type=Path), nargs=1)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -122,7 +122,7 @@ def cli(ctx,
 @click.option('--debug', is_flag=True)
 @click.pass_context
 def edit(ctx,
-         paths: Optional[tuple[str]],
+         path: str,
          apps_folder: str,
          gentoo_overlay_repo: str,
          github_user: str,
@@ -130,6 +130,8 @@ def edit(ctx,
          verbose: bool,
          debug: bool,
          ):
+
+    not_root()
 
     null, end, verbose, debug = nevd(ctx=ctx,
                                      printn=False,
@@ -159,21 +161,11 @@ def edit(ctx,
     #    if verbose:
     #        ic(config)
 
-    iterator = paths
+    path = Path(os.fsdecode(path))
+    editor = os.getenv('EDITOR')
 
-    index = 0
-    for index, path in enumerate_input(iterator=iterator,
-                                       dont_decode=True,  # paths are bytes
-                                       null=null,
-                                       progress=False,
-                                       skip=None,
-                                       head=None,
-                                       tail=None,
-                                       debug=debug,
-                                       verbose=verbose,):
-        path = Path(os.fsdecode(path))
+    if verbose:
+        ic(editor, path)
 
-        if verbose:
-            ic(index, path)
 
 
