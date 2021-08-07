@@ -174,10 +174,10 @@ def edit(ctx,
         eprint('WARNING: $EDITOR enviromental variable is not set. Defaulting to /usr/bin/vim')
         _editor = '/usr/bin/vim'
     else:   # no exception happened
+        ic(_editor)
         if not Path(_editor).is_absolute():
             editor = shutil.which(_editor)
-            if verbose:
-                eprint('WARNING: $EDITOR is {}, which is not an absolute path. Resolving to {}'.format(_editor, editor))
+            eprint('WARNING: $EDITOR is {}, which is not an absolute path. Resolving to {}'.format(_editor, editor))
         else:
             editor = _editor
         del _editor
