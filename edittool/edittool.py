@@ -90,7 +90,7 @@ from with_chdir import chdir
 
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
-                                      app_name='newapp',
+                                      app_name='edittool',
                                       verbose=False,
                                       debug=False,)
 
