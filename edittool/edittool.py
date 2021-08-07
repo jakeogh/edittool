@@ -101,7 +101,7 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
     #     terminal_width=shutil.get_terminal_size((80, 20)).columns)
 
 
-#ic(CFG)
+ic(CFG)
 
 
 @click.command(context_settings=CONTEXT_SETTINGS, no_args_is_help=True)
