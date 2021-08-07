@@ -174,7 +174,6 @@ def edit(ctx,
         eprint('WARNING: $EDITOR enviromental variable is not set. Defaulting to /usr/bin/vim')
         _editor = '/usr/bin/vim'
     else:   # no exception happened
-        ic(_editor)
         if not Path(_editor).is_absolute():
             editor = shutil.which(_editor)
             eprint('WARNING: $EDITOR is {}, which is not an absolute path. Resolving to {}'.format(_editor, editor))
@@ -186,3 +185,7 @@ def edit(ctx,
         ic(editor, path)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
+    os.system(editor + ' ' + path.as_posix())
+    post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
+    if pre_edit_hash != post_edit_hash:
+        ic('file changed:', path)
