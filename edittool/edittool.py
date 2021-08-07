@@ -166,7 +166,7 @@ def edit(ctx,
     edito = os.getenv('EDITO')
 
     if verbose:
-        ic(editor, path)
+        ic(editor, edito, path)
 
 
 
