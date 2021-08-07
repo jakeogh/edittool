@@ -43,6 +43,7 @@
 
 
 import os
+import shutil
 import sys
 import time
 from signal import SIG_DFL
@@ -73,6 +74,7 @@ from click_default_group import DefaultGroup
 from configtool import click_read_config
 from configtool import click_write_config_entry
 from enumerate_input import enumerate_input
+from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from retry_on_exception import retry_on_exception
 #from with_sshfs import sshfs
@@ -161,12 +163,26 @@ def edit(ctx,
     #    if verbose:
     #        ic(config)
 
-    path = Path(os.fsdecode(path))
-    editor = os.getenv('EDITOR')
-    edito = os.getenv('EDITO')
+    path = Path(os.fsdecode(path)).expanduser().resolve()
+    if not path.is_file():
+        eprint('ERROR:', path.as_posix(), 'is not a regular file.')
+        sys.exit(1)
+
+    try:
+        _editor = os.environ['EDITOR']
+    except KeyError:
+        eprint('WARNING: $EDITOR enviromental variable is not set. Defaulting to /usr/bin/vim')
+        _editor = '/usr/bin/vim'
+    else:   # no exception happened
+        if not Path(_editor).is_absolute():
+            editor = shutil.which(_editor)
+            if verbose:
+                eprint('WARNING: $EDITOR is {}, which is not an absolute path. Resolving to {}'.format(_editor, editor))
+        else:
+            editor = _editor
+        del _editor
 
     if verbose:
-        ic(editor, edito, path)
+        ic(editor, path)
 
-
-
+    pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
