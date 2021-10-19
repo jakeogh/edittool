@@ -22,26 +22,6 @@
 # pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
 # pylint: disable=C0413  # TEMP isort issue [wrong-import-position] Import "from pathlib import Path" should be placed at the top of the module [C0413]
 
-# code style:
-#   no guessing on spelling: never tmp_X always temporary_X
-#   dont_makedirs -> no_makedirs
-#   no guessing on case: local vars, functions and methods are lower case. classes are ThisClass(). Globals are THIS.
-#   del vars explicitely ASAP, assumptions are buggy
-#   rely on the compiler, code verbosity and explicitness can only be overruled by benchamrks (are really compiler bugs)
-#   no tabs. code must display the same independent of viewer
-#   no recursion, recursion is undecidiable, randomly bounded, and hard to reason about
-#   each elementis the same, no special cases for the first or last elemetnt:
-#       [1, 2, 3,] not [1, 2, 3]
-#       def this(*.
-#                a: bool,
-#                b: bool,
-#               ):
-#
-#   expicit loop control is better than while (condition):
-#       while True:
-#           # continue/break explicit logic
-
-
 import os
 import shutil
 import sys
@@ -189,3 +169,5 @@ def edit(ctx,
     post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     if pre_edit_hash != post_edit_hash:
         ic('file changed:', path)
+        sh.git.diff(_out=sys.stdout, _err=sys.stderr)
+
