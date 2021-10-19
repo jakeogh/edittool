@@ -165,12 +165,15 @@ def edit(ctx,
     if verbose:
         ic(editor, path)
 
-    edit_config = walkup_until_found(path.parent, '.edit_config', verbose=verbose, debug=debug)
+    edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
     ic(edit_config)
     with open(edit_config, 'r') as fh:
         edit_config_content = fh.read()
 
     ic(edit_config_content)
+    edit_config_content = edit_config_content.splitlines()
+    ic(edit_config_content)
+
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
@@ -180,5 +183,5 @@ def edit(ctx,
         sh.git.diff(_out=sys.stdout, _err=sys.stderr)
         sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
         sh.chown('user:user', path)  # fails if cant
-        with chdir(project_folder):
-            pass
+        #with chdir(project_folder):
+        #    pass
