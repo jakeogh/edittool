@@ -170,4 +170,4 @@ def edit(ctx,
     if pre_edit_hash != post_edit_hash:
         ic('file changed:', path)
         sh.git.diff(_out=sys.stdout, _err=sys.stderr)
-
+        sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path)  # https://pycqa.github.io/isort/
