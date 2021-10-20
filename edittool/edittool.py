@@ -175,6 +175,8 @@ def edit(ctx,
 
     edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
     ic(edit_config)
+    project_folder = edit_config.parent
+
     with open(edit_config, 'r') as fh:
         edit_config_content = fh.read()
 
@@ -208,5 +210,5 @@ def edit(ctx,
         sh.git.diff(_out=sys.stdout, _err=sys.stderr)
         sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
         sh.chown('user:user', path)  # fails if cant
-        #with chdir(project_folder):
-        #    pass
+        with chdir(project_folder):
+            sh.grep(sh.pylint(path), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
