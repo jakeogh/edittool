@@ -116,6 +116,12 @@ def edit(ctx,
          disable_change_detection: bool,
          ):
 
+    def parse_sh_var(*, item, var_name):
+        if '{}="'.format(var_name) in item:
+            result = item.split('=')[-1].strip('"').strip("'")
+            return result
+
+
     not_root()
 
     null, end, verbose, debug = nevd(ctx=ctx,
@@ -166,12 +172,6 @@ def edit(ctx,
 
     if verbose:
         ic(editor, path)
-
-
-    def parse_sh_var(*, item, var_name):
-        if '{}="'.format(var_name) in item:
-            result = item.split('=')[-1].strip('"').strip("'")
-            return result
 
     edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
     ic(edit_config)
