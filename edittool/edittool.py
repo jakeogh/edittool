@@ -171,8 +171,6 @@ def edit(ctx,
             result = item.split('=')[-1].strip('"').strip("'")
             return result
 
-
-
     edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
     ic(edit_config)
     project_folder = edit_config.parent
