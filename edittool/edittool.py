@@ -242,6 +242,18 @@ def edit(ctx,
                         ic('pylint returned an error or worse, exiting')
                         sys.exit(exit_code)
 
+            if  path.as_posix().endswith('.ebuild'):
+                sh.ebuild(path, 'manifest')
+                sh.git.add(path.parent / Path('Manifest'))
+                sh.git.add(path)
+                #cd "${file_dirname}" # should already be here...
+                sh.repoman()
+                sh.git.add('-u')
+                sh.git.commit('-m', 'auto-commit')
+                sh.git.push()
+                sh.emaint('sync', '-A')
+                sys.exit(0)
+
             else:   # buggy
                 splint_command = sh.Command('splint')
                 splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
@@ -255,9 +267,15 @@ def edit(ctx,
                 sh.git.add(path)
 
             sh.git.diff('--cached')
-            staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
-            ic(staged_but_uncomitted_changes_exist_command)
-            ic(staged_but_uncomitted_changes_exist_command.stdout)
-            ic(staged_but_uncomitted_changes_exist_command.exit_code)
+            try:
+                staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
+            except sh.ErrorReturnCode_1:
+                sh.git.add('-u')  # all tracked files
+                sh.git.commit('--verbose', '-m', 'auto-commit')
+
+
+            #ic(staged_but_uncomitted_changes_exist_command)
+            #ic(staged_but_uncomitted_changes_exist_command.stdout)
+            #ic(staged_but_uncomitted_changes_exist_command.exit_code)
 
             #sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
