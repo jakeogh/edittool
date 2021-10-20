@@ -254,8 +254,10 @@ def edit(ctx,
             if path.as_posix() in unstaged_changes_exist_command_result:
                 sh.git.add(path)
 
+            sh.git.diff('--cached')
             staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
             ic(staged_but_uncomitted_changes_exist_command)
+            ic(staged_but_uncomitted_changes_exist_command.stdout)
             ic(staged_but_uncomitted_changes_exist_command.exit_code)
 
             #sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
