@@ -278,7 +278,4 @@ def edit(ctx,
                 sh.emaint('sync', '-A')
 
 
-            #ic(staged_but_uncomitted_changes_exist_command)
-            #ic(staged_but_uncomitted_changes_exist_command.stdout)
-            #ic(staged_but_uncomitted_changes_exist_command.exit_code)
 
