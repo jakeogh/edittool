@@ -103,6 +103,7 @@ def cli(ctx,
 @click.option('--license', type=click.Choice(license_list(verbose=False, debug=False,)), default="ISC")
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
+@click.option('--disable-change-detection', is_flag=True)
 @click.pass_context
 def edit(ctx,
          path: str,
@@ -112,6 +113,7 @@ def edit(ctx,
          license: str,
          verbose: bool,
          debug: bool,
+         disable_change_detection: bool,
          ):
 
     not_root()
@@ -203,7 +205,7 @@ def edit(ctx,
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
     post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
-    if pre_edit_hash != post_edit_hash:
+    if (pre_edit_hash != post_edit_hash) or disable_change_detection:
         ic('file changed:', path)
         sh.git.diff(_out=sys.stdout, _err=sys.stderr)
         sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
@@ -222,7 +224,7 @@ def edit(ctx,
                 pylint_command = sh.Command('pylint')
                 try:
                     pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
-                    sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
+                    sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
 
                 #except sh.ErrorReturnCode_28:
                 #    ic(28)
