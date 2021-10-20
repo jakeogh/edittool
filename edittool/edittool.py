@@ -211,12 +211,15 @@ def edit(ctx,
         with chdir(project_folder):
             pylint_command = sh.Command('pylint')
             try:
-                pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
-            except sh.ErrorReturnCode_1:
-                ic(1)
-            except sh.ErrorReturnCode_28:
-                ic(28)
-                pass
+                pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+            #except sh.ErrorReturnCode_1:
+            #    ic(1)
+            #except sh.ErrorReturnCode_28:
+            #    ic(28)
+            #    pass
+            except sh.ErrorReturnCode as e:
+                ic(e)
+                ic(dir(e))
 
             ic(pylint_command)
             ic(dir(pylint_command))
