@@ -209,25 +209,48 @@ def edit(ctx,
         sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
         sh.chown('user:user', path)  # fails if cant
         with chdir(project_folder):
-            pylint_command = sh.Command('pylint')
-            try:
-                pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
-            #except sh.ErrorReturnCode_28:
-            #    ic(28)
-            #    pass
-            except sh.ErrorReturnCode as e:
-                ic(e)
-                ic(e.exit_code)
-                ic(dir(e))
-                if (e.exit_code & 0b00011) > 0:
-                    ic('pylint returned an error or worse, exiting')
-                    exit(e.exit_code)
+            if path.as_posix().endswith('.py'):
+                # Pylint should leave with following status code:
+                #   * 0 if everything went fine
+                # F * 1 if a fatal message was issued
+                # E * 2 if an error message was issued
+                # W * 4 if a warning message was issued
+                # R * 8 if a refactor message was issued
+                # C * 16 if a convention message was issued
+                #   * 32 on usage error
+                # status 1 to 16 will be bit-ORed
+                pylint_command = sh.Command('pylint')
+                try:
+                    pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+                #except sh.ErrorReturnCode_28:
+                #    ic(28)
+                #    pass
+                except sh.ErrorReturnCode as e:
+                    ic(e)
+                    ic(e.exit_code)
+                    ic(dir(e))
+                    if (e.exit_code & 0b00011) > 0:
+                        ic('pylint returned an error or worse, exiting')
+                        exit(e.exit_code)
 
-            ic(pylint_command)
-            ic(dir(pylint_command))
-            ic(pylint_command.stdout)
-            ic(pylint_command.stderr)
+                #ic(pylint_command)
+                #ic(dir(pylint_command))
+                #ic(pylint_command.stdout)
+                #ic(pylint_command.stderr)
+            else:   # buggy
+                splint_command = sh.Command('splint')
+                splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+
+            sh.git.add(path)  # covered below too
+            sh.git.add('-u')  # all tracked files
 
 
+            unstaged_changes_exist_command = sh.git('diff-index', 'HEAD', '--')  #sh.Command('/home/cfg/git/unstaged_changes_exist_for_file.sh')
+            if path.as_posix() in unstaged_changes_exist_command:
+                sh.git.add(path)
+
+            staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
+            ic(staged_but_uncomitted_changes_exist_command)
+            ic(staged_but_uncomitted_changes_exist_command.exit_code)
 
             #sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
