@@ -231,9 +231,10 @@ def edit(ctx,
                     ic(e.exit_code)
                     ic(dir(e))
                     sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
-                    if (e.exit_code & 0b00011) > 0:
+                    exit_code = e.exit_code
+                    if (exit_code & 0b00011) > 0:
                         ic('pylint returned an error or worse, exiting')
-                        exit(e.exit_code)
+                        sys.exit(exit_code)
 
             else:   # buggy
                 splint_command = sh.Command('splint')
