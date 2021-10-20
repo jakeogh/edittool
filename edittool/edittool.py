@@ -194,9 +194,6 @@ def edit(ctx,
             if not remote:
                 remote = parse_sh_var(item=item, var_name='remote')
 
-            #if 'short_package="' in item:
-            #    short_package = item.split('=')[-1].strip('"').strip("'")
-
         ic(short_package)
         ic(group)
         ic(remote)
@@ -216,12 +213,13 @@ def edit(ctx,
     post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     if (pre_edit_hash != post_edit_hash) or disable_change_detection:
         ic('file changed:', path)
-        sh.git.diff(_out=sys.stdout, _err=sys.stderr)
-        sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
-        sh.chown('user:user', path)  # fails if cant
         if project_folder:
             os.chdir(project_folder)
             #with chdir(project_folder):
+            sh.git.diff(_out=sys.stdout, _err=sys.stderr)
+
+        sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
+        sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
             # Pylint should leave with following status code:
