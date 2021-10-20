@@ -182,18 +182,23 @@ def edit(ctx,
     edit_config_content = edit_config_content.splitlines()
     ic(edit_config_content)
     short_package = None
+    group = None
+    remote = None
     for item in edit_config_content:
         ic(item)
         if not short_package:
             short_package = parse_sh_var(item=item, var_name='short_package')
         if not group:
             group = parse_sh_var(item=item, var_name='group')
+        if not remote:
+            remote = parse_sh_var(item=item, var_name='remote')
 
         #if 'short_package="' in item:
         #    short_package = item.split('=')[-1].strip('"').strip("'")
 
     ic(short_package)
     ic(group)
+    ic(remote)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
