@@ -233,6 +233,8 @@ def edit(ctx,
                         ic('pylint returned an error or worse, exiting')
                         exit(e.exit_code)
 
+                sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
+
                 #ic(pylint_command)
                 #ic(dir(pylint_command))
                 #ic(pylint_command.stdout)
@@ -244,8 +246,7 @@ def edit(ctx,
             sh.git.add(path)  # covered below too
             sh.git.add('-u')  # all tracked files
 
-
-            unstaged_changes_exist_command = sh.git('diff-index', 'HEAD', '--')  #sh.Command('/home/cfg/git/unstaged_changes_exist_for_file.sh')
+            unstaged_changes_exist_command = sh.git.diff_index('HEAD', '--')  #sh.Command('/home/cfg/git/unstaged_changes_exist_for_file.sh')
             if path.as_posix() in unstaged_changes_exist_command:
                 sh.git.add(path)
 
