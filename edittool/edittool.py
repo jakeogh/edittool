@@ -171,34 +171,45 @@ def edit(ctx,
     if verbose:
         ic(editor, path)
 
-    edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
-    ic(edit_config)
-    project_folder = edit_config.parent
 
-    with open(edit_config, 'r') as fh:
-        edit_config_content = fh.read()
+    def parse_edit_config(*, path, verbose, debug,):
+        edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
+        ic(edit_config)
 
-    ic(edit_config_content)
-    edit_config_content = edit_config_content.splitlines()
-    ic(edit_config_content)
-    short_package = None
-    group = None
-    remote = None
-    for item in edit_config_content:
-        ic(item)
-        if not short_package:
-            short_package = parse_sh_var(item=item, var_name='short_package')
-        if not group:
-            group = parse_sh_var(item=item, var_name='group')
-        if not remote:
-            remote = parse_sh_var(item=item, var_name='remote')
+        with open(edit_config, 'r') as fh:
+            edit_config_content = fh.read()
 
-        #if 'short_package="' in item:
-        #    short_package = item.split('=')[-1].strip('"').strip("'")
+        ic(edit_config_content)
+        edit_config_content = edit_config_content.splitlines()
+        ic(edit_config_content)
+        short_package = None
+        group = None
+        remote = None
+        for item in edit_config_content:
+            ic(item)
+            if not short_package:
+                short_package = parse_sh_var(item=item, var_name='short_package')
+            if not group:
+                group = parse_sh_var(item=item, var_name='group')
+            if not remote:
+                remote = parse_sh_var(item=item, var_name='remote')
 
-    ic(short_package)
-    ic(group)
-    ic(remote)
+            #if 'short_package="' in item:
+            #    short_package = item.split('=')[-1].strip('"').strip("'")
+
+        ic(short_package)
+        ic(group)
+        ic(remote)
+        return edit_config, short_package, group, remote
+
+    edit_config = None
+    project_folder = None
+    try:
+        edit_config, short_package, group, remote = parse_edit_config(path=path, verbose=verbose, debug=debug)
+        project_folder = edit_config.parent
+    except FileNotFoundError:
+        ic('NO .edit_config found, not doing stuff...')
+        pass
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
