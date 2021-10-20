@@ -277,5 +277,3 @@ def edit(ctx,
                 sh.git.push()
                 sh.emaint('sync', '-A')
 
-
-
