@@ -280,4 +280,3 @@ def edit(ctx,
             #ic(staged_but_uncomitted_changes_exist_command.stdout)
             #ic(staged_but_uncomitted_changes_exist_command.exit_code)
 
-            #sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
