@@ -222,6 +222,7 @@ def edit(ctx,
                 pylint_command = sh.Command('pylint')
                 try:
                     pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+                    sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
                 #except sh.ErrorReturnCode_28:
                 #    ic(28)
                 #    pass
@@ -229,11 +230,11 @@ def edit(ctx,
                     ic(e)
                     ic(e.exit_code)
                     ic(dir(e))
+                    sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
                     if (e.exit_code & 0b00011) > 0:
                         ic('pylint returned an error or worse, exiting')
                         exit(e.exit_code)
 
-                sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
 
 
                 #ic(pylint_command)
