@@ -263,6 +263,7 @@ def edit(ctx,
 
             unstaged_changes_exist_command = sh.Command('git')
             unstaged_changes_exist_command_result = unstaged_changes_exist_command('diff-index', 'HEAD', '--')
+            print(unstaged_changes_exist_command_result)
             if path.as_posix() in unstaged_changes_exist_command_result:
                 sh.git.add(path)
 
@@ -270,6 +271,7 @@ def edit(ctx,
             try:
                 staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
             except sh.ErrorReturnCode_1:
+                ic("comitting")
                 sh.git.add('-u')  # all tracked files
                 sh.git.commit('--verbose', '-m', 'auto-commit')
                 sh.git.push()
