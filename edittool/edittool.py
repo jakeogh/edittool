@@ -256,7 +256,12 @@ def edit(ctx,
                 sh.git.add(path.parent / Path('Manifest'))
                 sh.git.add(path)
                 #cd "${file_dirname}" # should already be here...
-                sh.repoman()
+                try:
+                    sh.repoman()
+                except sh.ErrorReturnCode_1 as e:
+                    ic(e)
+                    print(e.stdout)
+
                 sh.git.add('-u')
                 sh.git.commit('--verbose', '-m', 'auto-commit')
                 sh.git.push()
