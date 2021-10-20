@@ -165,6 +165,14 @@ def edit(ctx,
     if verbose:
         ic(editor, path)
 
+
+    def parse_sh_var(*, item, var_name):
+        if '{}="'.format(var_name) in item:
+            result = item.split('=')[-1].strip('"').strip("'")
+            return result
+
+
+
     edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
     ic(edit_config)
     with open(edit_config, 'r') as fh:
@@ -176,9 +184,16 @@ def edit(ctx,
     short_package = None
     for item in edit_config_content:
         ic(item)
-        if 'short_package="' in item:
-            short_package = item.split('=')[-1].strip('"').strip("'")
+        if not short_package:
+            short_package = parse_sh_var(item=item, var_name='short_package')
+        if not group:
+            group = parse_sh_var(item=item, var_name='group')
+
+        #if 'short_package="' in item:
+        #    short_package = item.split('=')[-1].strip('"').strip("'")
+
     ic(short_package)
+    ic(group)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
