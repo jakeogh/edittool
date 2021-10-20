@@ -58,11 +58,9 @@ from enumerate_input import enumerate_input
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from retry_on_exception import retry_on_exception
-#from with_sshfs import sshfs
 from with_chdir import chdir
 
 #from pathtool import write_line_to_file
-#from getdents import files
 
 
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
@@ -283,6 +281,4 @@ def edit(ctx,
                         ic(e.stdout)
                         ic(e.stderr)
                         ic("remote not found")
-
-
 
