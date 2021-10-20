@@ -265,7 +265,7 @@ def edit(ctx,
                 sh.git.add('-u')
                 sh.git.commit('--verbose', '-m', 'auto-commit')
                 sh.git.push()
-                sh.emaint('sync', '-A')
+                sh.sudo.emaint('sync', '-A', _fg=True)
                 sys.exit(0)
 
         elif path.as_posix().endswith('.sh'):
@@ -291,7 +291,7 @@ def edit(ctx,
             if remote and Path(edit_config.parent / Path('.push_enabled')).is_file():
                 try:
                     sh.git.push()
-                    sh.emaint('sync', '-A')
+                    sh.sudo.emaint('sync', '-A', _fg=True)
                 except sh.ErrorReturnCode_128 as e:
                     ic(e)
                     ic(e.stdout)
