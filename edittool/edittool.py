@@ -236,7 +236,7 @@ def edit(ctx,
                     ic(dir(e))
                     ic(e.stdout)
                     ic(e.stderr)
-                    sh.grep('--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
+                    sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
                     exit_code = e.exit_code
                     if (exit_code & 0b00011) > 0:
                         ic('pylint returned an error or worse, exiting')
