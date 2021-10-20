@@ -268,7 +268,7 @@ def edit(ctx,
                 ic("comitting")
                 sh.git.add('-u')  # all tracked files
                 sh.git.commit('--verbose', '-m', 'auto-commit')
-                if remote:
+                if remote and Path(edit_config.parent / Path('.push_enabled')).is_file():
                     try:
                         sh.git.push()
                         sh.emaint('sync', '-A')
@@ -278,11 +278,11 @@ def edit(ctx,
                         ic(e.stderr)
                         ic('remote not found')
 
-                    if Path(edit_config.parent / Path('.push_enabled')).is_file():
-                        with sh.contrib.sudo:
-                            sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
-                    else:
-                        ic('push is not enabled, changes comitted locally')
+                else:
+                    ic('push is not enabled, changes comitted locally')
+
+                with sh.contrib.sudo:
+                    sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
 
 
 
