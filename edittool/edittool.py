@@ -209,4 +209,8 @@ def edit(ctx,
         sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
         sh.chown('user:user', path)  # fails if cant
         with chdir(project_folder):
-            sh.grep(sh.pylint(path), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
+            pylint_command = sh.Command('pylint', path)
+            pylint_command(_out=sys.stdout, _err=sys.stderr, _tee=True)
+            ic(pylint_command)
+            ic(dir(pylint_command))
+            sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
