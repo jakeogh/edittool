@@ -211,7 +211,7 @@ def edit(ctx,
         with chdir(project_folder):
             pylint_command = sh.Command('pylint', path)
             try:
-                pylint_command(_out=sys.stdout, _err=sys.stderr, _tee=True, _exit_ok=[0])
+                pylint_command(_out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
             except sh.ErrorReturnCode_28:
                 ic(28)
                 pass
