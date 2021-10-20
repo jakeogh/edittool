@@ -274,6 +274,7 @@ def edit(ctx,
                 ic("comitting")
                 sh.git.add('-u')  # all tracked files
                 sh.git.commit('--verbose', '-m', 'auto-commit')
-                sh.git.push()
-                sh.emaint('sync', '-A')
+                if remote:
+                    sh.git.push()
+                    sh.emaint('sync', '-A')
 
