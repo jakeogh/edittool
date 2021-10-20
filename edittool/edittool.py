@@ -275,6 +275,12 @@ def edit(ctx,
                 sh.git.add('-u')  # all tracked files
                 sh.git.commit('--verbose', '-m', 'auto-commit')
                 if remote:
-                    sh.git.push()
-                    sh.emaint('sync', '-A')
+                    try:
+                        sh.git.push()
+                        sh.emaint('sync', '-A')
+                    except sh.ErrorReturnCode_128 as e:
+                        ic(e)
+                        ic(e.stdout)
+                        ic(e.stderr)
+                        ic("remote not found")
 
