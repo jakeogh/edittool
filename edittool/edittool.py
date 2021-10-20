@@ -242,7 +242,7 @@ def edit(ctx,
                         ic('pylint returned an error or worse, exiting')
                         sys.exit(exit_code)
 
-            if  path.as_posix().endswith('.ebuild'):
+            elif  path.as_posix().endswith('.ebuild'):
                 sh.ebuild(path, 'manifest')
                 sh.git.add(path.parent / Path('Manifest'))
                 sh.git.add(path)
@@ -254,7 +254,7 @@ def edit(ctx,
                 sh.emaint('sync', '-A')
                 sys.exit(0)
 
-            else:   # buggy
+            elif path.as_posix().endswith('.sh'):
                 splint_command = sh.Command('splint')
                 splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
 
