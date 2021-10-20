@@ -235,12 +235,6 @@ def edit(ctx,
                         ic('pylint returned an error or worse, exiting')
                         exit(e.exit_code)
 
-
-
-                #ic(pylint_command)
-                #ic(dir(pylint_command))
-                #ic(pylint_command.stdout)
-                #ic(pylint_command.stderr)
             else:   # buggy
                 splint_command = sh.Command('splint')
                 splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
