@@ -249,7 +249,8 @@ def edit(ctx,
             sh.git.add(path)  # covered below too
             sh.git.add('-u')  # all tracked files
 
-            unstaged_changes_exist_command = sh.git.diff_index('HEAD', '--')  #sh.Command('/home/cfg/git/unstaged_changes_exist_for_file.sh')
+            unstaged_changes_exist_command = sh.Command('git')
+            unstaged_changes_exist_command_result = unstaged_changes_exist_command('diff-index', 'HEAD', '--')
             if path.as_posix() in unstaged_changes_exist_command:
                 sh.git.add(path)
 
