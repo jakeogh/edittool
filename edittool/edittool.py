@@ -224,4 +224,5 @@ def edit(ctx,
             ic(pylint_command.stderr)
 
 
+
             #sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
