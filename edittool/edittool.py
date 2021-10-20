@@ -219,80 +219,83 @@ def edit(ctx,
         sh.git.diff(_out=sys.stdout, _err=sys.stderr)
         sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
         sh.chown('user:user', path)  # fails if cant
-        with chdir(project_folder):
-            if path.as_posix().endswith('.py'):
-                # Pylint should leave with following status code:
-                #   * 0 if everything went fine
-                # F * 1 if a fatal message was issued
-                # E * 2 if an error message was issued
-                # W * 4 if a warning message was issued
-                # R * 8 if a refactor message was issued
-                # C * 16 if a convention message was issued
-                #   * 32 on usage error
-                # status 1 to 16 will be bit-ORed
-                pylint_command = sh.Command('pylint')
-                try:
-                    pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
-                    sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
+        if project_folder:
+            os.chdir(project_folder)
+            #with chdir(project_folder):
 
-                except sh.ErrorReturnCode as e:
+        if path.as_posix().endswith('.py'):
+            # Pylint should leave with following status code:
+            #   * 0 if everything went fine
+            # F * 1 if a fatal message was issued
+            # E * 2 if an error message was issued
+            # W * 4 if a warning message was issued
+            # R * 8 if a refactor message was issued
+            # C * 16 if a convention message was issued
+            #   * 32 on usage error
+            # status 1 to 16 will be bit-ORed
+            pylint_command = sh.Command('pylint')
+            try:
+                pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+                sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
+
+            except sh.ErrorReturnCode as e:
+                ic(e)
+                ic(e.exit_code)
+                ic(dir(e))
+                ic(e.stdout)
+                ic(e.stderr)
+                sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
+                exit_code = e.exit_code
+                if (exit_code & 0b00011) > 0:
+                    ic('pylint returned an error or worse, exiting')
+                    sys.exit(exit_code)
+
+        elif  path.as_posix().endswith('.ebuild'):
+            sh.ebuild(path, 'manifest')
+            sh.git.add(path.parent / Path('Manifest'))
+            sh.git.add(path)
+            #cd "${file_dirname}" # should already be here...
+            sh.repoman()
+            sh.git.add('-u')
+            sh.git.commit('--verbose', '-m', 'auto-commit')
+            sh.git.push()
+            sh.emaint('sync', '-A')
+            sys.exit(0)
+
+        elif path.as_posix().endswith('.sh'):
+            splint_command = sh.Command('splint')
+            splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+
+        sh.git.add(path)  # covered below too
+        sh.git.add('-u')  # all tracked files
+
+        unstaged_changes_exist_command = sh.Command('git')
+        unstaged_changes_exist_command_result = unstaged_changes_exist_command('diff-index', 'HEAD', '--')
+        print(unstaged_changes_exist_command_result)
+        if path.as_posix() in unstaged_changes_exist_command_result:
+            sh.git.add(path)
+
+        sh.git.diff('--cached')
+        try:
+            staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
+        except sh.ErrorReturnCode_1:
+            ic("comitting")
+            sh.git.add('-u')  # all tracked files
+            sh.git.commit('--verbose', '-m', 'auto-commit')
+            if remote and Path(edit_config.parent / Path('.push_enabled')).is_file():
+                try:
+                    sh.git.push()
+                    sh.emaint('sync', '-A')
+                except sh.ErrorReturnCode_128 as e:
                     ic(e)
-                    ic(e.exit_code)
-                    ic(dir(e))
                     ic(e.stdout)
                     ic(e.stderr)
-                    sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
-                    exit_code = e.exit_code
-                    if (exit_code & 0b00011) > 0:
-                        ic('pylint returned an error or worse, exiting')
-                        sys.exit(exit_code)
+                    ic('remote not found')
 
-            elif  path.as_posix().endswith('.ebuild'):
-                sh.ebuild(path, 'manifest')
-                sh.git.add(path.parent / Path('Manifest'))
-                sh.git.add(path)
-                #cd "${file_dirname}" # should already be here...
-                sh.repoman()
-                sh.git.add('-u')
-                sh.git.commit('--verbose', '-m', 'auto-commit')
-                sh.git.push()
-                sh.emaint('sync', '-A')
-                sys.exit(0)
+            else:
+                ic('push is not enabled, changes comitted locally')
 
-            elif path.as_posix().endswith('.sh'):
-                splint_command = sh.Command('splint')
-                splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+            #with sh.contrib.sudo:
+            #    sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
 
-            sh.git.add(path)  # covered below too
-            sh.git.add('-u')  # all tracked files
-
-            unstaged_changes_exist_command = sh.Command('git')
-            unstaged_changes_exist_command_result = unstaged_changes_exist_command('diff-index', 'HEAD', '--')
-            print(unstaged_changes_exist_command_result)
-            if path.as_posix() in unstaged_changes_exist_command_result:
-                sh.git.add(path)
-
-            sh.git.diff('--cached')
-            try:
-                staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
-            except sh.ErrorReturnCode_1:
-                ic("comitting")
-                sh.git.add('-u')  # all tracked files
-                sh.git.commit('--verbose', '-m', 'auto-commit')
-                if remote and Path(edit_config.parent / Path('.push_enabled')).is_file():
-                    try:
-                        sh.git.push()
-                        sh.emaint('sync', '-A')
-                    except sh.ErrorReturnCode_128 as e:
-                        ic(e)
-                        ic(e.stdout)
-                        ic(e.stderr)
-                        ic('remote not found')
-
-                else:
-                    ic('push is not enabled, changes comitted locally')
-
-                #with sh.contrib.sudo:
-                #    sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
-
-                sh.sudo.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _fg=True)
+            sh.sudo.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _fg=True)
