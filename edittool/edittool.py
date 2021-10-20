@@ -217,7 +217,11 @@ def edit(ctx,
             #    pass
             except sh.ErrorReturnCode as e:
                 ic(e)
+                ic(e.exit_code)
                 ic(dir(e))
+                if (e.exit_code & 0b00011) > 0:
+                    ic('pylint returned an error or worse, exiting')
+                    exit(e.exit_code)
 
             ic(pylint_command)
             ic(dir(pylint_command))
