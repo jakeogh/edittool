@@ -249,7 +249,7 @@ def edit(ctx,
                 #cd "${file_dirname}" # should already be here...
                 sh.repoman()
                 sh.git.add('-u')
-                sh.git.commit('-m', 'auto-commit')
+                sh.git.commit('--verbose', '-m', 'auto-commit')
                 sh.git.push()
                 sh.emaint('sync', '-A')
                 sys.exit(0)
@@ -272,6 +272,8 @@ def edit(ctx,
             except sh.ErrorReturnCode_1:
                 sh.git.add('-u')  # all tracked files
                 sh.git.commit('--verbose', '-m', 'auto-commit')
+                sh.git.push()
+                sh.emaint('sync', '-A')
 
 
             #ic(staged_but_uncomitted_changes_exist_command)
