@@ -212,8 +212,6 @@ def edit(ctx,
             pylint_command = sh.Command('pylint')
             try:
                 pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
-            #except sh.ErrorReturnCode_1:
-            #    ic(1)
             #except sh.ErrorReturnCode_28:
             #    ic(28)
             #    pass
