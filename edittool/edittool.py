@@ -281,6 +281,8 @@ def edit(ctx,
                     if Path(edit_config.parent / Path('.push_enabled')).is_file():
                         with sh.contrib.sudo:
                             sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
+                    else:
+                        ic('push is not enabled, changes comitted locally')
 
 
 
