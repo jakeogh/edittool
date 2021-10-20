@@ -173,8 +173,12 @@ def edit(ctx,
     ic(edit_config_content)
     edit_config_content = edit_config_content.splitlines()
     ic(edit_config_content)
+    short_package = None
     for item in edit_config_content:
         ic(item)
+        if 'short_package="' in item:
+            short_package = item.split('=')[-1].strip('"').strip("'")
+    ic(short_package)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
