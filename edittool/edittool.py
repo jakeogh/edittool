@@ -210,7 +210,13 @@ def edit(ctx,
         sh.chown('user:user', path)  # fails if cant
         with chdir(project_folder):
             pylint_command = sh.Command('pylint', path)
-            pylint_command(_out=sys.stdout, _err=sys.stderr, _tee=True)
+            try:
+                pylint_command(_out=sys.stdout, _err=sys.stderr, _tee=True, _exit_ok=[0])
+            except sh.ErrorReturnCode_28:
+                ic(28)
+                pass
+
             ic(pylint_command)
             ic(dir(pylint_command))
-            sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
+
+            #sh.grep(sh.pylint(path, _exit_ok=[0]), '--color', '-E', '": E|$"', _out=sys.stdout, _err=sys.stderr)
