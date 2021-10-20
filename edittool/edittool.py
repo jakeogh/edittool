@@ -251,16 +251,17 @@ def edit(ctx,
                     sys.exit(exit_code)
 
         elif  path.as_posix().endswith('.ebuild'):
-            sh.ebuild(path, 'manifest')
-            sh.git.add(path.parent / Path('Manifest'))
-            sh.git.add(path)
-            #cd "${file_dirname}" # should already be here...
-            sh.repoman()
-            sh.git.add('-u')
-            sh.git.commit('--verbose', '-m', 'auto-commit')
-            sh.git.push()
-            sh.emaint('sync', '-A')
-            sys.exit(0)
+            with chdir(path.resolve().parent):
+                sh.ebuild(path, 'manifest')
+                sh.git.add(path.parent / Path('Manifest'))
+                sh.git.add(path)
+                #cd "${file_dirname}" # should already be here...
+                sh.repoman()
+                sh.git.add('-u')
+                sh.git.commit('--verbose', '-m', 'auto-commit')
+                sh.git.push()
+                sh.emaint('sync', '-A')
+                sys.exit(0)
 
         elif path.as_posix().endswith('.sh'):
             splint_command = sh.Command('splint')
