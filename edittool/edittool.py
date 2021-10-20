@@ -251,7 +251,7 @@ def edit(ctx,
 
             unstaged_changes_exist_command = sh.Command('git')
             unstaged_changes_exist_command_result = unstaged_changes_exist_command('diff-index', 'HEAD', '--')
-            if path.as_posix() in unstaged_changes_exist_command:
+            if path.as_posix() in unstaged_changes_exist_command_result:
                 sh.git.add(path)
 
             staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
