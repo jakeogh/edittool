@@ -218,10 +218,10 @@ def edit(ctx,
             #with chdir(project_folder):
             sh.git.diff(_out=sys.stdout, _err=sys.stderr)
 
-        sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
         sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
+            sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
             # Pylint should leave with following status code:
             #   * 0 if everything went fine
             # F * 1 if a fatal message was issued
