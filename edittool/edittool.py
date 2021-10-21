@@ -255,7 +255,7 @@ def edit(ctx,
                 sh.git.add(path)
                 #cd "${file_dirname}" # should already be here...
                 try:
-                    sh.repoman()
+                    sh.repoman(_out=sys.stdout, _err=sys.stderr)
                 except sh.ErrorReturnCode_1 as e:
                     ic(e)
                     print(e.stdout)
