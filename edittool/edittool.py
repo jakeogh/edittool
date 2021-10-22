@@ -174,19 +174,19 @@ def edit(ctx,
 
     def parse_edit_config(*, path, verbose, debug,):
         edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
-        ic(edit_config)
+        #ic(edit_config)
 
         with open(edit_config, 'r') as fh:
             edit_config_content = fh.read()
 
-        ic(edit_config_content)
+        #ic(edit_config_content)
         edit_config_content = edit_config_content.splitlines()
-        ic(edit_config_content)
+        #ic(edit_config_content)
         short_package = None
         group = None
         remote = None
         for item in edit_config_content:
-            ic(item)
+            #ic(item)
             if not short_package:
                 short_package = parse_sh_var(item=item, var_name='short_package')
             if not group:
