@@ -239,9 +239,9 @@ def edit(ctx,
             except sh.ErrorReturnCode as e:
                 ic(e)
                 ic(e.exit_code)
-                ic(dir(e))
-                ic(e.stdout)
-                ic(e.stderr)
+                #ic(dir(e))
+                #ic(e.stdout)
+                #ic(e.stderr)
                 sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
                 exit_code = e.exit_code
                 if (exit_code & 0b00011) > 0:
