@@ -128,28 +128,6 @@ def edit(ctx,
                                      verbose=verbose,
                                      debug=debug,)
 
-    #global APP_NAME
-    #config, config_mtime = click_read_config(click_instance=click,
-    #                                         app_name=APP_NAME,
-    #                                         verbose=verbose,
-    #                                         debug=debug,)
-    #if verbose:
-    #    ic(config, config_mtime)
-
-    #if add:
-    #    section = "test_section"
-    #    key = "test_key"
-    #    value = "test_value"
-    #    config, config_mtime = click_write_config_entry(click_instance=click,
-    #                                                    app_name=APP_NAME,
-    #                                                    section=section,
-    #                                                    key=key,
-    #                                                    value=value,
-    #                                                    verbose=verbose,
-    #                                                    debug=debug,)
-    #    if verbose:
-    #        ic(config)
-
     path = Path(os.fsdecode(path)).expanduser().resolve()
     if not path.is_file():
         eprint('ERROR:', path.as_posix(), 'is not a regular file.')
@@ -176,7 +154,7 @@ def edit(ctx,
         edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
         #ic(edit_config)
 
-        with open(edit_config, 'r') as fh:
+        with open(edit_config, 'r', encoding='utf8') as fh:
             edit_config_content = fh.read()
 
         #ic(edit_config_content)
@@ -221,7 +199,7 @@ def edit(ctx,
         sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
-            sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr)  # https://pycqa.github.io/isort/
+            sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
             # Pylint should leave with following status code:
             #   * 0 if everything went fine
             # F * 1 if a fatal message was issued
@@ -233,7 +211,7 @@ def edit(ctx,
             # status 1 to 16 will be bit-ORed
             pylint_command = sh.Command('pylint')
             try:
-                pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+                pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
                 sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
 
             except sh.ErrorReturnCode as e:
@@ -255,20 +233,20 @@ def edit(ctx,
                 sh.git.add(path)
                 #cd "${file_dirname}" # should already be here...
                 try:
-                    sh.repoman(_out=sys.stdout, _err=sys.stderr)
+                    sh.repoman(_out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
                 except sh.ErrorReturnCode_1 as e:
                     ic(e)
                     print(e.stdout)
 
-                sh.git.add('-u')
-                sh.git.commit('--verbose', '-m', 'auto-commit')
-                sh.git.push()
-                sh.sudo.emaint('sync', '-A', _fg=True)
+                sh.git.add('-u', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+                sh.git.commit('--verbose', '-m', 'auto-commit', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+                sh.git.push(_out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+                sh.sudo.emaint('sync', '-A', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
                 sys.exit(0)
 
         elif path.as_posix().endswith('.sh'):
             splint_command = sh.Command('splint')
-            splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _tee=True, _ok_code=[0])
+            splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
 
         sh.git.add(path)  # covered below too
         sh.git.add('-u')  # all tracked files
