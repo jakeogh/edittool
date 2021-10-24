@@ -261,7 +261,7 @@ def edit(ctx,
         try:
             staged_but_uncomitted_changes_exist_command = sh.git.diff('--cached', '--exit-code')
         except sh.ErrorReturnCode_1:
-            ic("comitting")
+            ic('comitting')
             sh.git.add('-u')  # all tracked files
             sh.git.commit('--verbose', '-m', 'auto-commit')
             if remote and Path(edit_config.parent / Path('.push_enabled')).is_file():
