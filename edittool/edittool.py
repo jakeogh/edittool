@@ -281,6 +281,10 @@ def edit(ctx,
             #    sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
 
             sh.sudo.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _fg=True)
-            help_command = sh.Command(short_package)
-            help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+            try:
+                help_command = sh.Command(short_package)
+            except sh.CommandNotFound as e:
+                ic(e)
+            else:
+                help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
 
