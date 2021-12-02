@@ -254,9 +254,13 @@ def edit(ctx,
                 sh.sudo.emaint('sync', '-A', _fg=True)
                 sys.exit(0)
 
-        elif path.as_posix().endswith('.sh'):
+        elif path.as_posix().endswith('.c'):
             splint_command = sh.Command('splint')
             splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
+
+        elif path.as_posix().endswith('.sh'):
+            shellcheck_command = sh.Command('shellcheck')
+            shellcheck_result = shellcheck_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
 
         sh.git.add(path)  # covered below too
         sh.git.add('-u')  # all tracked files
