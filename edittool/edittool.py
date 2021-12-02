@@ -114,7 +114,7 @@ def cli(ctx,
 @click.option('--disable-change-detection', is_flag=True)
 @click.pass_context
 def edit(ctx,
-         path: str,
+         path: Path,
          apps_folder: str,
          gentoo_overlay_repo: str,
          github_user: str,
@@ -160,7 +160,11 @@ def edit(ctx,
         ic(editor, path)
 
 
-    def parse_edit_config(*, path, verbose, debug,):
+    def parse_edit_config(*,
+                          path: Path,
+                          verbose: bool,
+                          debug: bool,
+                          ):
         edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
         #ic(edit_config)
 
