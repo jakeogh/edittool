@@ -260,7 +260,7 @@ def edit(ctx,
 
         elif path.as_posix().endswith('.sh'):
             shellcheck_command = sh.Command('shellcheck')
-            shellcheck_result = shellcheck_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
+            shellcheck_result = shellcheck_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0, 1])  # TODO
 
         sh.git.add(path)  # covered below too
         sh.git.add('-u')  # all tracked files
