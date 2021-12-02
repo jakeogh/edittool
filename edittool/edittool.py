@@ -188,10 +188,9 @@ def edit(ctx,
 
     def unstaged_commits_exist(path):
         _git = sh.Command("/home/cfg/git/unstaged_changes_exist_for_file.sh")
-        _git()
+        _git(path.as_posix())
         #try:
         #    _git()
-
 
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
