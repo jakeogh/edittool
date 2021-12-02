@@ -80,9 +80,8 @@ ic(CFG)
 
 def unstaged_commits_exist(path):
     _git = sh.Command("/home/cfg/git/unstaged_changes_exist_for_file.sh")
-    _git(path.as_posix())
     try:
-        _git()
+        _git(path.as_posix())
     except sh.ErrorReturnCode_1:
         return True
     return False
