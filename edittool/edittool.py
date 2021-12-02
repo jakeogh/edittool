@@ -77,6 +77,17 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 ic(CFG)
 
+
+def unstaged_commits_exist(path):
+    _git = sh.Command("/home/cfg/git/unstaged_changes_exist_for_file.sh")
+    _git(path.as_posix())
+    try:
+        _git()
+    except sh.ErrorReturnCode_1:
+        return True
+    return False
+
+
 @click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
@@ -185,13 +196,6 @@ def edit(ctx,
     except FileNotFoundError:
         ic('NO .edit_config found, not doing stuff...')
         pass
-
-    def unstaged_commits_exist(path):
-        _git = sh.Command("/home/cfg/git/unstaged_changes_exist_for_file.sh")
-        _git(path.as_posix())
-        #try:
-        #    _git()
-
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
