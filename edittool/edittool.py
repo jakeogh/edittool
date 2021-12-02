@@ -186,10 +186,18 @@ def edit(ctx,
         ic('NO .edit_config found, not doing stuff...')
         pass
 
+    def unstaged_commits_exist(path):
+        _git = sh.Command("/home/cfg/git/unstaged_changes_exist_for_file.sh")
+        _git()
+        #try:
+        #    _git()
+
+
+
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
     os.system(editor + ' ' + path.as_posix())
     post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
-    if (pre_edit_hash != post_edit_hash) or disable_change_detection:
+    if (pre_edit_hash != post_edit_hash) or disable_change_detection or unstaged_commits_exist(path):
         ic('file changed:', path)
         if project_folder:
             os.chdir(project_folder)
