@@ -258,7 +258,8 @@ def edit(ctx,
                 sh.git.add('-u', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
                 sh.git.commit('--verbose', '-m', 'auto-commit', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
                 #sh.git.push(_out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
-                sh.git.push(_out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tty_in=True)
+                #sh.git.push(_out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tty_in=True)
+                sh.git.push(_out=sys.stdout, _err=sys.stderr, _tty_in=True)
                 sh.sudo.emaint('sync', '-A', _fg=True)
                 sys.exit(0)
 
