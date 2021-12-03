@@ -87,6 +87,44 @@ def unstaged_commits_exist(path):
     return False
 
 
+def parse_sh_var(*, item, var_name):
+    if '{}="'.format(var_name) in item:
+        result = item.split('=')[-1].strip('"').strip("'")
+        return result
+
+
+def parse_edit_config(*,
+                      path: Path,
+                      verbose: bool,
+                      debug: bool,
+                      ):
+    edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
+    #ic(edit_config)
+
+    with open(edit_config, 'r', encoding='utf8') as fh:
+        edit_config_content = fh.read()
+
+    #ic(edit_config_content)
+    edit_config_content = edit_config_content.splitlines()
+    #ic(edit_config_content)
+    short_package = None
+    group = None
+    remote = None
+    for item in edit_config_content:
+        #ic(item)
+        if not short_package:
+            short_package = parse_sh_var(item=item, var_name='short_package')
+        if not group:
+            group = parse_sh_var(item=item, var_name='group')
+        if not remote:
+            remote = parse_sh_var(item=item, var_name='remote')
+
+    ic(short_package)
+    ic(group)
+    ic(remote)
+    return edit_config, short_package, group, remote
+
+
 @click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
 @click.option('--verbose', is_flag=True)
 @click.option('--debug', is_flag=True)
@@ -124,12 +162,6 @@ def edit(ctx,
          disable_change_detection: bool,
          ):
 
-    def parse_sh_var(*, item, var_name):
-        if '{}="'.format(var_name) in item:
-            result = item.split('=')[-1].strip('"').strip("'")
-            return result
-
-
     not_root()
 
     null, end, verbose, debug = nevd(ctx=ctx,
@@ -160,39 +192,10 @@ def edit(ctx,
         ic(editor, path)
 
 
-    def parse_edit_config(*,
-                          path: Path,
-                          verbose: bool,
-                          debug: bool,
-                          ):
-        edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
-        #ic(edit_config)
-
-        with open(edit_config, 'r', encoding='utf8') as fh:
-            edit_config_content = fh.read()
-
-        #ic(edit_config_content)
-        edit_config_content = edit_config_content.splitlines()
-        #ic(edit_config_content)
-        short_package = None
-        group = None
-        remote = None
-        for item in edit_config_content:
-            #ic(item)
-            if not short_package:
-                short_package = parse_sh_var(item=item, var_name='short_package')
-            if not group:
-                group = parse_sh_var(item=item, var_name='group')
-            if not remote:
-                remote = parse_sh_var(item=item, var_name='remote')
-
-        ic(short_package)
-        ic(group)
-        ic(remote)
-        return edit_config, short_package, group, remote
-
     edit_config = None
     project_folder = None
+    group = None
+    remote = None
     try:
         edit_config, short_package, group, remote = parse_edit_config(path=path, verbose=verbose, debug=debug)
         project_folder = edit_config.parent
