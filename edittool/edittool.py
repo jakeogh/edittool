@@ -265,7 +265,7 @@ def edit(ctx,
 
         elif path.as_posix().endswith('.c'):
             splint_command = sh.Command('splint')
-            splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
+            splint_result = splint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0, 1])
 
         elif path.as_posix().endswith('.sh'):
             shellcheck_command = sh.Command('shellcheck')
