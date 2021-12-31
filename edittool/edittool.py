@@ -50,7 +50,6 @@ from asserttool import ic
 from asserttool import nevd
 from asserttool import not_root
 from asserttool import validate_slice
-from asserttool import verify
 from click_default_group import DefaultGroup
 from configtool import click_read_config
 from configtool import click_write_config_entry
