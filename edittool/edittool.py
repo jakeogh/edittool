@@ -25,7 +25,7 @@
 import os
 import shutil
 import sys
-import time
+#import time
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
@@ -47,13 +47,15 @@ from typing import Union
 
 from asserttool import eprint
 from asserttool import ic
-from asserttool import nevd
 from asserttool import not_root
+from asserttool import tv
 from asserttool import validate_slice
 from click_default_group import DefaultGroup
+from clicktool import click_add_options
+from clicktool import click_global_options
 from configtool import click_read_config
-from configtool import click_write_config_entry
-from enumerate_input import enumerate_input
+#from configtool import click_write_config_entry
+#from enumerate_input import enumerate_input
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from retry_on_exception import retry_on_exception
@@ -65,7 +67,7 @@ from with_chdir import chdir
 CFG, CONFIG_MTIME = click_read_config(click_instance=click,
                                       app_name='edittool',
                                       verbose=False,
-                                      debug=False,)
+                                      )
 
 
 # https://github.com/mitsuhiko/click/issues/441
@@ -95,9 +97,8 @@ def parse_sh_var(*, item, var_name):
 def parse_edit_config(*,
                       path: Path,
                       verbose: bool,
-                      debug: bool,
                       ):
-    edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose, debug=debug)
+    edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose,)
     #ic(edit_config)
 
     with open(edit_config, 'r', encoding='utf8') as fh:
@@ -125,20 +126,18 @@ def parse_edit_config(*,
 
 
 @click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
-@click.option('--verbose', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        verbose: bool,
-        debug: bool,
+        verbose: int,
+        verbose_inf: bool,
         ):
 
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     verbose_inf=False,
-                                     debug=debug,)
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+
 
 
 @cli.command()
@@ -146,11 +145,9 @@ def cli(ctx,
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
-@click.option('--license', type=click.Choice(license_list(verbose=False, debug=False,)), default="ISC")
-@click.option('--verbose', count=True)
-@click.option('--verbose-inf', is_flag=True)
-@click.option('--debug', is_flag=True)
+@click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
 @click.option('--disable-change-detection', is_flag=True)
+@click_add_options(click_global_options)
 @click.pass_context
 def edit(ctx,
          path: Path,
@@ -160,18 +157,15 @@ def edit(ctx,
          license: str,
          verbose: bool,
          verbose_inf: bool,
-         debug: bool,
          disable_change_detection: bool,
          ):
 
     not_root()
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
 
-    null, end, verbose, debug = nevd(ctx=ctx,
-                                     printn=False,
-                                     ipython=False,
-                                     verbose=verbose,
-                                     verbose_inf=verbose_inf,
-                                     debug=debug,)
 
     path = Path(os.fsdecode(path)).expanduser().resolve()
     if not path.is_file():
@@ -200,15 +194,15 @@ def edit(ctx,
     group = None
     remote = None
     try:
-        edit_config, short_package, group, remote = parse_edit_config(path=path, verbose=verbose, debug=debug)
+        edit_config, short_package, group, remote = parse_edit_config(path=path, verbose=verbose,)
         project_folder = edit_config.parent
     except FileNotFoundError:
         ic('NO .edit_config found, not doing stuff...')
         pass
 
-    pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
+    pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
-    post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose, debug=debug)
+    post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     if (pre_edit_hash != post_edit_hash) or disable_change_detection or unstaged_commits_exist(path):
         ic('file changed:', path)
         if project_folder:
