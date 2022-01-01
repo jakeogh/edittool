@@ -137,6 +137,7 @@ def cli(ctx,
                                      printn=False,
                                      ipython=False,
                                      verbose=verbose,
+                                     verbose_inf=False,
                                      debug=debug,)
 
 
@@ -146,7 +147,8 @@ def cli(ctx,
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
 @click.option('--license', type=click.Choice(license_list(verbose=False, debug=False,)), default="ISC")
-@click.option('--verbose', is_flag=True)
+@click.option('--verbose', count=True)
+@click.option('--verbose-inf', is_flag=True)
 @click.option('--debug', is_flag=True)
 @click.option('--disable-change-detection', is_flag=True)
 @click.pass_context
@@ -157,6 +159,7 @@ def edit(ctx,
          github_user: str,
          license: str,
          verbose: bool,
+         verbose_inf: bool,
          debug: bool,
          disable_change_detection: bool,
          ):
@@ -167,6 +170,7 @@ def edit(ctx,
                                      printn=False,
                                      ipython=False,
                                      verbose=verbose,
+                                     verbose_inf=verbose_inf,
                                      debug=debug,)
 
     path = Path(os.fsdecode(path)).expanduser().resolve()
