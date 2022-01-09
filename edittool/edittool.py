@@ -147,6 +147,7 @@ def cli(ctx,
 @click.option('--github-user', type=str, required=True)
 @click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
 @click.option('--disable-change-detection', is_flag=True)
+@click.option('--ignore-pylint', is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
 def edit(ctx,
@@ -158,6 +159,7 @@ def edit(ctx,
          verbose: bool,
          verbose_inf: bool,
          disable_change_detection: bool,
+         ignore_pylint: bool,
          ):
 
     not_root()
@@ -239,7 +241,8 @@ def edit(ctx,
                 exit_code = e.exit_code
                 if (exit_code & 0b00011) > 0:
                     ic('pylint returned an error or worse, exiting')
-                    sys.exit(exit_code)
+                    if not ignore_pylint:
+                        sys.exit(exit_code)
 
         elif  path.as_posix().endswith('.ebuild'):
             with chdir(path.resolve().parent):
