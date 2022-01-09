@@ -225,7 +225,8 @@ def edit(ctx,
             # status 1 to 16 will be bit-ORed
             pylint_command = sh.Command('pylint')
             try:
-                pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
+                #pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
+                pylint_result = pylint_command(path, _ok_code=[0])
                 sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
 
             except sh.ErrorReturnCode as e:
