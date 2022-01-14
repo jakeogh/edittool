@@ -226,13 +226,16 @@ def edit(ctx,
         project_folder = edit_config.parent
     except FileNotFoundError:
         ic('NO .edit_config found, not doing stuff...')
-        pass
+        return
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
     post_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
+    if pre_edit_hash != post_edit_hash:
+        ic('file changed:', path, pre_edit_hash, post_edit_hash,)
+    if unstaged_commits_exist(path):
+        ic('unstaged_commits_exist() returned True')
     if (pre_edit_hash != post_edit_hash) or disable_change_detection or unstaged_commits_exist(path):
-        ic('file changed:', path)
         if project_folder:
             os.chdir(project_folder)
             #with chdir(project_folder):
