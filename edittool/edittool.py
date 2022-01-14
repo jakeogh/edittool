@@ -25,17 +25,11 @@
 import os
 import shutil
 import sys
+from pathlib import Path
 #import time
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
-
-import click
-import sh
-from walkup_until_found import walkup_until_found
-
-signal(SIGPIPE, SIG_DFL)
-from pathlib import Path
 from typing import ByteString
 from typing import Generator
 from typing import Iterable
@@ -45,6 +39,8 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+import click
+import sh
 from asserttool import eprint
 from asserttool import ic
 from asserttool import not_root
@@ -59,8 +55,10 @@ from configtool import click_read_config
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from retry_on_exception import retry_on_exception
+from walkup_until_found import walkup_until_found
 from with_chdir import chdir
 
+signal(SIGPIPE, SIG_DFL)
 #from pathtool import write_line_to_file
 
 
@@ -89,7 +87,7 @@ def unstaged_commits_exist(path):
 
 
 def parse_sh_var(*, item, var_name):
-    if '{}="'.format(var_name) in item:
+    if f'{var_name}="' in item:
         result = item.split('=')[-1].strip('"').strip("'")
         return result
 
@@ -125,6 +123,27 @@ def parse_edit_config(*,
     return edit_config, short_package, group, remote
 
 
+def run_pylint(*,
+               path: Path,
+               ignore_pylint: bool,
+               verbose: int,
+               ):
+    pylint_command = sh.Command('pylint')
+    try:
+        pylint_result = pylint_command(path, _ok_code=[0])
+        sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
+
+    except sh.ErrorReturnCode as e:
+        ic(e.exit_code)
+        sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
+        exit_code = e.exit_code
+        if (exit_code & 0b00011) > 0:
+            ic('pylint returned an error or worse, exiting')
+            if not ignore_pylint:
+                sys.exit(exit_code)
+
+
+
 @click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
 @click_add_options(click_global_options)
 @click.pass_context
@@ -137,7 +156,6 @@ def cli(ctx,
                       verbose=verbose,
                       verbose_inf=verbose_inf,
                       )
-
 
 
 @cli.command()
@@ -215,7 +233,10 @@ def edit(ctx,
         sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
-            sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
+            if edit_config:
+                sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
+
+            run_pylint(path=path, ignore_pylint=ignore_pylint, verbose=verbose,)
             # Pylint should leave with following status code:
             #   * 0 if everything went fine
             # F * 1 if a fatal message was issued
@@ -225,24 +246,6 @@ def edit(ctx,
             # C * 16 if a convention message was issued
             #   * 32 on usage error
             # status 1 to 16 will be bit-ORed
-            pylint_command = sh.Command('pylint')
-            try:
-                #pylint_result = pylint_command(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _tee=True, _ok_code=[0])
-                pylint_result = pylint_command(path, _ok_code=[0])
-                sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=pylint_result.stdout)
-
-            except sh.ErrorReturnCode as e:
-                #ic(e)
-                ic(e.exit_code)
-                #ic(dir(e))
-                #ic(e.stdout)
-                #ic(e.stderr)
-                sh.grep('--color', '-E', ': E|$', _out=sys.stdout, _err=sys.stderr, _in=e.stdout)
-                exit_code = e.exit_code
-                if (exit_code & 0b00011) > 0:
-                    ic('pylint returned an error or worse, exiting')
-                    if not ignore_pylint:
-                        sys.exit(exit_code)
 
         elif  path.as_posix().endswith('.ebuild'):
             with chdir(path.resolve().parent):
