@@ -166,6 +166,9 @@ def cli(ctx,
 @click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
 @click.option('--disable-change-detection', is_flag=True)
 @click.option('--ignore-pylint', is_flag=True)
+@click.option('--skip-isort', is_flag=True)
+@click.option('--skip-pylint', is_flag=True)
+@click.option('--skip-code-checks', is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
 def edit(ctx,
@@ -178,6 +181,9 @@ def edit(ctx,
          verbose_inf: bool,
          disable_change_detection: bool,
          ignore_pylint: bool,
+         skip_isort: bool,
+         skip_pylint: bool,
+         skip_code_checks: bool,
          ):
 
     not_root()
@@ -186,6 +192,9 @@ def edit(ctx,
                       verbose_inf=verbose_inf,
                       )
 
+    if skip_code_checks:
+        skip_isort = True
+        skip_pylint = True
 
     path = Path(os.fsdecode(path)).expanduser().resolve()
     if not path.is_file():
@@ -207,7 +216,6 @@ def edit(ctx,
 
     if verbose:
         ic(editor, path)
-
 
     edit_config = None
     project_folder = None
@@ -233,19 +241,20 @@ def edit(ctx,
         sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
-            if edit_config:
+            if not skip_isort:
                 sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
 
-            run_pylint(path=path, ignore_pylint=ignore_pylint, verbose=verbose,)
-            # Pylint should leave with following status code:
-            #   * 0 if everything went fine
-            # F * 1 if a fatal message was issued
-            # E * 2 if an error message was issued
-            # W * 4 if a warning message was issued
-            # R * 8 if a refactor message was issued
-            # C * 16 if a convention message was issued
-            #   * 32 on usage error
-            # status 1 to 16 will be bit-ORed
+            if not skip_pylint:
+                run_pylint(path=path, ignore_pylint=ignore_pylint, verbose=verbose,)
+                # Pylint should leave with following status code:
+                #   * 0 if everything went fine
+                # F * 1 if a fatal message was issued
+                # E * 2 if an error message was issued
+                # W * 4 if a warning message was issued
+                # R * 8 if a refactor message was issued
+                # C * 16 if a convention message was issued
+                #   * 32 on usage error
+                # status 1 to 16 will be bit-ORed
 
         elif  path.as_posix().endswith('.ebuild'):
             with chdir(path.resolve().parent):
