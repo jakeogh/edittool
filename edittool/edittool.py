@@ -168,7 +168,7 @@ def cli(ctx,
 @click.option('--ignore-pylint', is_flag=True)
 @click.option('--skip-isort', is_flag=True)
 @click.option('--skip-pylint', is_flag=True)
-@click.option('--skip-code-checks', is_flag=True)
+@click.option('--ignore-checks', 'skip_code_checks', is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
 def edit(ctx,
