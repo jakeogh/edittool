@@ -225,8 +225,9 @@ def edit(ctx,
         edit_config, short_package, group, remote = parse_edit_config(path=path, verbose=verbose,)
         project_folder = edit_config.parent
     except FileNotFoundError:
-        ic('NO .edit_config found, not doing stuff...')
-        return
+        if not path.as_posix().endswith('.ebuild'):
+            ic('NO .edit_config found, and its not an ebuild, exiting...')
+            return
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
