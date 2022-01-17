@@ -132,6 +132,9 @@ def autogenerate_readme(*,
                         verbose: bool,
                         ):
     autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
+    with open(autogenerate_readme, 'r', encoding='utf8') as fh:
+        commands = [cmd for cmd in fh.readlines() if cmd]
+    ic(commands)
     readme = autogenerate_readme.parent / Path('README.md')
     ic(readme)
 
