@@ -193,7 +193,7 @@ def autogenerate_readme(*,
                         ):
 
     def append_line_to_readme(line):
-        with open(readme, 'w', encoding='utf8') as fh:
+        with open(readme, 'a', encoding='utf8') as fh:
             fh.write(line)
 
     autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
