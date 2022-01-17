@@ -191,6 +191,11 @@ def autogenerate_readme(*,
                         path: Path,
                         verbose: bool,
                         ):
+
+    def append_line_to_readme(line):
+        with open(readme, 'w', encoding='utf8') as fh:
+            fh.write(line)
+
     autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
     with open(autogenerate_readme, 'r', encoding='utf8') as fh:
         commands = [cmd.strip() for cmd in fh if cmd.strip()]
@@ -203,29 +208,32 @@ def autogenerate_readme(*,
         readme.unlink()
     except FileNotFoundError:
         pass
-    with open(readme, 'w', encoding='utf8') as fh:
-        fh.write(f'```\n$ {short_package}\n')
-        fh.flush()
-        test_command = sh.Command(short_package)
-        ic(test_command)
-        test_command = test_command.bake(test_command_arg)
-        ic(test_command)
-        test_command(_err=fh, _ok_code=[0, 1])
-        tty = False
-        for command in commands[1:]:
-            ic(command)
-            if tty:
-                #out, err = tty_capture(command, b'')
-                os.system('colorpipe ' + command)
-                tty = False
-                #ic(out, err)
-                continue
-            if command == '#tty:':
-                tty = True
-                continue
+    #with open(readme, 'w', encoding='utf8') as fh:
+    append_line_to_readme(f'```\n$ {short_package}\n')
 
-            fh.write(f'\n$ {command}\n')
-            fh.flush()
+    test_command = sh.Command(short_package)
+    ic(test_command)
+    test_command = test_command.bake(test_command_arg)
+    ic(test_command)
+    with open(readme, 'w', encoding='utf8') as fh:
+        test_command(_err=fh, _ok_code=[0, 1])
+
+    tty = False
+    for command in commands[1:]:
+        ic(command)
+        if tty:
+            #out, err = tty_capture(command, b'')
+            os.system('colorpipe ' + command + ' >> ' + readme.as_posix())
+            tty = False
+            #ic(out, err)
+            continue
+        if command == '#tty:':
+            tty = True
+            continue
+
+        append_line_to_readme(f'\n$ {command}\n')
+
+        with open(readme, 'w', encoding='utf8') as fh:
             popen_instance = subprocess.Popen(command,
                                               stdout=fh,
                                               stderr=fh,
@@ -233,8 +241,8 @@ def autogenerate_readme(*,
             output, errors = popen_instance.communicate()
             exit_code = popen_instance.returncode
             ic(output, errors, exit_code)
-        fh.flush()
-        fh.write('\n```\n')
+
+        append_line_to_readme('\n```\n')
 
     return
 
