@@ -242,7 +242,7 @@ def autogenerate_readme(*,
             exit_code = popen_instance.returncode
             ic(output, errors, exit_code)
 
-        append_line_to_readme('\n```\n', readme)
+    append_line_to_readme('\n```\n', readme)
 
     return
 
