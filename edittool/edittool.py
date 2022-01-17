@@ -215,9 +215,10 @@ def autogenerate_readme(*,
         for command in commands[1:]:
             ic(command)
             if tty:
-                out, err = tty_capture(command, b'')
+                #out, err = tty_capture(command, b'')
+                os.system('colorpipe ' + command)
                 tty = False
-                ic(out, err)
+                #ic(out, err)
                 continue
             if command == '#tty:':
                 tty = True
