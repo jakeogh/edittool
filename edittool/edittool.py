@@ -460,6 +460,8 @@ def edit(ctx,
             else:
                 help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
 
+        autogenerate_readme(path=path, verbose=verbose,)
+
 
 @cli.command()
 @click.argument("path", type=click.Path(path_type=Path), nargs=1)
