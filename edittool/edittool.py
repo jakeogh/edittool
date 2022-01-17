@@ -108,6 +108,7 @@ def parse_edit_config(*,
     short_package = None
     group = None
     remote = None
+    test_command_arg = None
     for item in edit_config_content:
         #ic(item)
         if not short_package:
@@ -116,19 +117,30 @@ def parse_edit_config(*,
             group = parse_sh_var(item=item, var_name='group')
         if not remote:
             remote = parse_sh_var(item=item, var_name='remote')
+        if not test_command_arg:
+            test_command_arg = parse_sh_var(item=item, var_name='test_command_arg')
 
     ic(short_package)
     ic(group)
     ic(remote)
-    return edit_config, short_package, group, remote
+    ic(test_command_arg)
+    return edit_config, short_package, group, remote, test_command_arg
 
 
 def autogenerate_readme(*,
                         path: Path,
                         verbose: bool,
                         ):
-    readme_enable = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
-    ic(readme_enable)
+    autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
+    readme = autogenerate_readme.parent / Path('README.md')
+    ic(readme)
+
+    edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
+    with open(readme, 'w', encoding='utf8') as fh:
+        fh.write('\n$ ')
+        test_command = sh.Command(short_package)
+        test_command = test_command.bake(test_command_arg)
+        test_command(_out=fh)
     sys.exit(1)
 
     #with open(edit_config, 'r', encoding='utf8') as fh:
@@ -254,7 +266,7 @@ def edit(ctx,
     group = None
     remote = None
     try:
-        edit_config, short_package, group, remote = parse_edit_config(path=path, verbose=verbose,)
+        edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
         project_folder = edit_config.parent
     except FileNotFoundError:
         if not path.as_posix().endswith('.ebuild'):
