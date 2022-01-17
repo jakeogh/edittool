@@ -196,7 +196,12 @@ def autogenerate_readme(*,
         with open(readme, 'a', encoding='utf8') as fh:
             fh.write(line)
 
-    autogenerate_readme_script = walkup_until_found(path=path.parent, name='.autogenerate_readme.sh', verbose=verbose,)
+    try:
+        autogenerate_readme_script = walkup_until_found(path=path.parent, name='.autogenerate_readme.sh', verbose=verbose,)
+    except FileNotFoundError as e:
+        ic(e)
+        return
+
     with open(autogenerate_readme_script, 'r', encoding='utf8') as fh:
         commands = [cmd.strip() for cmd in fh if cmd.strip()]
     ic(commands)
