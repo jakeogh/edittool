@@ -223,6 +223,7 @@ def autogenerate_readme(*,
         ic(command)
         if tty:
             #out, err = tty_capture(command, b'')
+            append_line_to_readme(f'\n$ {command}\n', readme)
             os.system('colorpipe ' + command + ' >> ' + readme.as_posix())
             tty = False
             #ic(out, err)
