@@ -139,9 +139,12 @@ def autogenerate_readme(*,
     readme.unlink()
     with open(readme, 'w', encoding='utf8') as fh:
         fh.write('\n$ ')
+        fh.flush()
         test_command = sh.Command(short_package)
+        ic(test_command)
         test_command = test_command.bake(test_command_arg)
-        test_command(_out=fh)
+        ic(test_command)
+        test_command(_err=fh)
     sys.exit(1)
 
     #with open(edit_config, 'r', encoding='utf8') as fh:
