@@ -202,6 +202,10 @@ def autogenerate_readme(*,
     ic(commands)
     readme = autogenerate_readme.parent / Path('README.md')
     ic(readme)
+    description = autogenerate_readme.parent / Path('.description.md')
+    ic(description)
+    with open(description, 'r', encoding='utf8') as fh:
+        append_line_to_readme(fh.read(), readme)
 
     edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
     try:
