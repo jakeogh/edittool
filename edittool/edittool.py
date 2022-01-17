@@ -152,7 +152,7 @@ def autogenerate_readme(*,
         test_command = test_command.bake(test_command_arg)
         ic(test_command)
         test_command(_err=fh, _ok_code=[0, 1])
-        for command in commands:
+        for command in commands[1:]:
             ic(command)
             fh.write(f'\n$ {command}\n')
             fh.flush()
