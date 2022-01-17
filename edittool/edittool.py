@@ -141,37 +141,15 @@ def autogenerate_readme(*,
     except FileNotFoundError:
         pass
     with open(readme, 'w', encoding='utf8') as fh:
-        fh.write('\n$ ')
+        fh.write(f'$ {short_package}')
         fh.flush()
         test_command = sh.Command(short_package)
         ic(test_command)
         test_command = test_command.bake(test_command_arg)
         ic(test_command)
         test_command(_err=fh)
-    sys.exit(1)
 
-    #with open(edit_config, 'r', encoding='utf8') as fh:
-    #    edit_config_content = fh.read()
-
-    ##ic(edit_config_content)
-    #edit_config_content = edit_config_content.splitlines()
-    ##ic(edit_config_content)
-    #short_package = None
-    #group = None
-    #remote = None
-    #for item in edit_config_content:
-    #    #ic(item)
-    #    if not short_package:
-    #        short_package = parse_sh_var(item=item, var_name='short_package')
-    #    if not group:
-    #        group = parse_sh_var(item=item, var_name='group')
-    #    if not remote:
-    #        remote = parse_sh_var(item=item, var_name='remote')
-
-    #ic(short_package)
-    #ic(group)
-    #ic(remote)
-    #return edit_config, short_package, group, remote
+    return
 
 
 def run_pylint(*,
