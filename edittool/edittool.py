@@ -136,6 +136,7 @@ def autogenerate_readme(*,
     ic(readme)
 
     edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
+    readme.unlink()
     with open(readme, 'w', encoding='utf8') as fh:
         fh.write('\n$ ')
         test_command = sh.Command(short_package)
