@@ -196,7 +196,7 @@ def autogenerate_readme(*,
         with open(readme, 'a', encoding='utf8') as fh:
             fh.write(line)
 
-    autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
+    autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme.sh', verbose=verbose,)
     with open(autogenerate_readme, 'r', encoding='utf8') as fh:
         commands = [cmd.strip() for cmd in fh if cmd.strip()]
     ic(commands)
