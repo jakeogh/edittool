@@ -24,6 +24,7 @@
 
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 #import time
@@ -133,7 +134,7 @@ def autogenerate_readme(*,
                         ):
     autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
     with open(autogenerate_readme, 'r', encoding='utf8') as fh:
-        commands = [cmd for cmd in fh.readlines() if cmd]
+        commands = [cmd for cmd in fh if cmd]
     ic(commands)
     readme = autogenerate_readme.parent / Path('README.md')
     ic(readme)
@@ -151,6 +152,11 @@ def autogenerate_readme(*,
         test_command = test_command.bake(test_command_arg)
         ic(test_command)
         test_command(_err=fh, _ok_code=[0, 1])
+        for command in commands:
+            popen_instance = subprocess.Popen(command,
+                                              stdout=fh,
+                                              stderr=fh,
+                                              shell=True,)
         fh.write('\n```\n')
 
     return
