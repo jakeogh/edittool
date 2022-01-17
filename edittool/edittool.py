@@ -192,7 +192,7 @@ def autogenerate_readme(*,
                         verbose: bool,
                         ):
 
-    def append_line_to_readme(line):
+    def append_line_to_readme(line, readme):
         with open(readme, 'a', encoding='utf8') as fh:
             fh.write(line)
 
@@ -209,13 +209,13 @@ def autogenerate_readme(*,
     except FileNotFoundError:
         pass
     #with open(readme, 'w', encoding='utf8') as fh:
-    append_line_to_readme(f'```\n$ {short_package}\n')
+    append_line_to_readme(f'```\n$ {short_package}\n', readme)
 
     test_command = sh.Command(short_package)
     ic(test_command)
     test_command = test_command.bake(test_command_arg)
     ic(test_command)
-    with open(readme, 'w', encoding='utf8') as fh:
+    with open(readme, 'a', encoding='utf8') as fh:
         test_command(_err=fh, _ok_code=[0, 1])
 
     tty = False
@@ -231,9 +231,9 @@ def autogenerate_readme(*,
             tty = True
             continue
 
-        append_line_to_readme(f'\n$ {command}\n')
+        append_line_to_readme(f'\n$ {command}\n', readme)
 
-        with open(readme, 'w', encoding='utf8') as fh:
+        with open(readme, 'a', encoding='utf8') as fh:
             popen_instance = subprocess.Popen(command,
                                               stdout=fh,
                                               stderr=fh,
@@ -242,7 +242,7 @@ def autogenerate_readme(*,
             exit_code = popen_instance.returncode
             ic(output, errors, exit_code)
 
-        append_line_to_readme('\n```\n')
+        append_line_to_readme('\n```\n', readme)
 
     return
 
