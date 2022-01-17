@@ -153,10 +153,15 @@ def autogenerate_readme(*,
         ic(test_command)
         test_command(_err=fh, _ok_code=[0, 1])
         for command in commands:
+            ic(command)
             popen_instance = subprocess.Popen(command,
                                               stdout=fh,
                                               stderr=fh,
                                               shell=True,)
+            output, errors = popen_instance.communicate()
+            exit_code = popen_instance.returncode
+            ic(output, errors, exit_code)
+        fh.flush()
         fh.write('\n```\n')
 
     return
