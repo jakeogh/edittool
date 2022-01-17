@@ -232,7 +232,10 @@ def autogenerate_readme(*,
             tty = True
             continue
 
-        append_line_to_readme(f'\n$ {command}\n', readme)
+        if command.startswith('#'):
+            append_line_to_readme(f'\n$ {command}', readme)
+        else:
+            append_line_to_readme(f'\n$ {command}\n', readme)
 
         with open(readme, 'a', encoding='utf8') as fh:
             popen_instance = subprocess.Popen(command,
