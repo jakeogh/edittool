@@ -196,15 +196,19 @@ def autogenerate_readme(*,
         with open(readme, 'a', encoding='utf8') as fh:
             fh.write(line)
 
-    autogenerate_readme = walkup_until_found(path=path.parent, name='.autogenerate_readme.sh', verbose=verbose,)
-    with open(autogenerate_readme, 'r', encoding='utf8') as fh:
+    autogenerate_readme_script = walkup_until_found(path=path.parent, name='.autogenerate_readme.sh', verbose=verbose,)
+    with open(autogenerate_readme_script, 'r', encoding='utf8') as fh:
         commands = [cmd.strip() for cmd in fh if cmd.strip()]
     ic(commands)
-    readme = autogenerate_readme.parent / Path('README.md')
+
+    readme = autogenerate_readme_script.parent / Path('README.md')
     ic(readme)
-    description = autogenerate_readme.parent / Path('.description.md')
+
+    description = autogenerate_readme_script.parent / Path('.description.md')
     ic(description)
+
     edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
+
     try:
         readme.unlink()
     except FileNotFoundError:
