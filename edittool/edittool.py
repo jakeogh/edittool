@@ -261,6 +261,7 @@ def autogenerate_readme(*,
 
     append_line_to_readme('\n```\n', readme)
     if unstaged_commits_exist(readme):
+        sh.git.status(_out=sys.stdout, _err=sys.stderr)
         sh.git.add(readme)
         sh.git.commit('-m', 'autoupdate README.md')
     return
