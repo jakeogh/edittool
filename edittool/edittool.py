@@ -141,13 +141,14 @@ def autogenerate_readme(*,
     except FileNotFoundError:
         pass
     with open(readme, 'w', encoding='utf8') as fh:
-        fh.write(f'$ {short_package}\n')
+        fh.write(f'```\n$ {short_package}\n')
         fh.flush()
         test_command = sh.Command(short_package)
         ic(test_command)
         test_command = test_command.bake(test_command_arg)
         ic(test_command)
         test_command(_err=fh, _ok_code=[0, 1])
+        fh.write('\n```')
 
     return
 
