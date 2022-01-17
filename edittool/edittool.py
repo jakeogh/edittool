@@ -123,6 +123,38 @@ def parse_edit_config(*,
     return edit_config, short_package, group, remote
 
 
+def autogenerate_readme(*,
+                        path: Path,
+                        verbose: bool,
+                        ):
+    readme_enable = walkup_until_found(path=path.parent, name='.autogenerate_readme', verbose=verbose,)
+    ic(readme_enable)
+    sys.exit(1)
+
+    #with open(edit_config, 'r', encoding='utf8') as fh:
+    #    edit_config_content = fh.read()
+
+    ##ic(edit_config_content)
+    #edit_config_content = edit_config_content.splitlines()
+    ##ic(edit_config_content)
+    #short_package = None
+    #group = None
+    #remote = None
+    #for item in edit_config_content:
+    #    #ic(item)
+    #    if not short_package:
+    #        short_package = parse_sh_var(item=item, var_name='short_package')
+    #    if not group:
+    #        group = parse_sh_var(item=item, var_name='group')
+    #    if not remote:
+    #        remote = parse_sh_var(item=item, var_name='remote')
+
+    #ic(short_package)
+    #ic(group)
+    #ic(remote)
+    #return edit_config, short_package, group, remote
+
+
 def run_pylint(*,
                path: Path,
                ignore_pylint: bool,
@@ -327,4 +359,28 @@ def edit(ctx,
                 ic(e)
             else:
                 help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+
+
+@cli.command()
+@click.argument("path", type=click.Path(path_type=Path), nargs=1)
+@click_add_options(click_global_options)
+@click.pass_context
+def generate_readme(ctx,
+                    path: Path,
+                    verbose: bool,
+                    verbose_inf: bool,
+                    ):
+
+    not_root()
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+
+    path = Path(os.fsdecode(path)).expanduser().resolve()
+    if not path.is_file():
+        eprint('ERROR:', path.as_posix(), 'is not a regular file.')
+        sys.exit(1)
+
+    autogenerate_readme(path=path, verbose=verbose)
 
