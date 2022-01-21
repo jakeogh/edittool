@@ -287,6 +287,12 @@ def run_pylint(*,
                 sys.exit(exit_code)
 
 
+def isort_path(path: Path,
+               verbose: int,
+               ) -> None:
+
+    sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
+
 
 @click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
 @click_add_options(click_global_options)
@@ -300,6 +306,24 @@ def cli(ctx,
                       verbose=verbose,
                       verbose_inf=verbose_inf,
                       )
+
+@cli.command()
+@click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
+@click_add_options(click_global_options)
+@click.pass_context
+def isort(ctx,
+         paths: tuple[Path, ...],
+         verbose: bool,
+         verbose_inf: bool,
+         ):
+
+    not_root()
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+    for path in paths:
+        isort_path(path=path, verbose=verbose)
 
 
 @cli.command()
@@ -390,7 +414,7 @@ def edit(ctx,
 
         if path.as_posix().endswith('.py'):
             if not skip_isort:
-                sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
+                isort_path(path=path, verbose=verbose)
 
             if not skip_pylint:
                 run_pylint(path=path, ignore_pylint=ignore_pylint, verbose=verbose,)
