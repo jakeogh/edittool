@@ -169,6 +169,7 @@ def parse_edit_config(*,
     group = None
     remote = None
     test_command_arg = None
+    dont_reformat = None
     for item in edit_config_content:
         #ic(item)
         if not short_package:
@@ -179,12 +180,15 @@ def parse_edit_config(*,
             remote = parse_sh_var(item=item, var_name='remote')
         if not test_command_arg:
             test_command_arg = parse_sh_var(item=item, var_name='test_command_arg')
+        if not dont_reformat:
+            dont_reformat = parse_sh_var(item=item, var_name='dont_reformat')
 
     ic(short_package)
     ic(group)
     ic(remote)
     ic(test_command_arg)
-    return edit_config, short_package, group, remote, test_command_arg
+    ic(dont_reformat)
+    return edit_config, short_package, group, remote, test_command_arg, dont_reformat
 
 
 def autogenerate_readme(*,
@@ -212,7 +216,7 @@ def autogenerate_readme(*,
     description = autogenerate_readme_script.parent / Path('.description.md')
     ic(description)
 
-    edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
+    edit_config, short_package, group, remote, test_command_arg, dont_reformat = parse_edit_config(path=path, verbose=verbose,)
 
     try:
         readme.unlink()
@@ -389,13 +393,17 @@ def edit(ctx,
     project_folder = None
     group = None
     remote = None
+    dont_reformat = None
     try:
-        edit_config, short_package, group, remote, test_command_arg = parse_edit_config(path=path, verbose=verbose,)
+        edit_config, short_package, group, remote, test_command_arg, dont_reformat = parse_edit_config(path=path, verbose=verbose,)
         project_folder = edit_config.parent
     except FileNotFoundError:
         if not path.as_posix().endswith('.ebuild'):
             ic('NO .edit_config found, and its not an ebuild, exiting...')
             return
+
+    if dont_reformat:
+        skip_isort = True
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
