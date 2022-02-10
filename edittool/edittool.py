@@ -183,11 +183,13 @@ def parse_edit_config(*,
         if not dont_reformat:
             dont_reformat = parse_sh_var(item=item, var_name='dont_reformat')
 
-    ic(short_package)
-    ic(group)
-    ic(remote)
-    ic(test_command_arg)
-    ic(dont_reformat)
+    if verbose:
+        ic(short_package)
+        ic(group)
+        ic(remote)
+        ic(test_command_arg)
+        ic(dont_reformat)
+
     return edit_config, short_package, group, remote, test_command_arg, dont_reformat
 
 
