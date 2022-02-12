@@ -498,7 +498,7 @@ def edit(ctx,
                     ic('remote not found')
 
             else:
-                ic('push is not enabled, changes comitted locally')
+                ic('.enable_push not found: push is not enabled, changes comitted locally')
 
             #with sh.contrib.sudo:
             #    sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
