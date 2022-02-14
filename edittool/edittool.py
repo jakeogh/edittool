@@ -42,15 +42,15 @@ from typing import Union
 
 import click
 import sh
-from asserttool import eprint
 from asserttool import ic
 from asserttool import not_root
-from asserttool import tv
 from asserttool import validate_slice
 from click_default_group import DefaultGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
+from clicktool import tv
 from configtool import click_read_config
+from eprint import eprint
 #from configtool import click_write_config_entry
 #from enumerate_input import enumerate_input
 from hashtool import sha3_256_hash_file
