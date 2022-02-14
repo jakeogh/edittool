@@ -51,6 +51,7 @@ from clicktool import click_global_options
 from clicktool import tv
 from configtool import click_read_config
 from eprint import eprint
+from gittool import unstaged_commits_exist
 #from configtool import click_write_config_entry
 #from enumerate_input import enumerate_input
 from hashtool import sha3_256_hash_file
@@ -133,17 +134,6 @@ def tty_capture(cmd, bytes_input):
 
 #out, err = tty_capture(["python", "test.py"], b"abc\n")
 #print((out, err))
-
-
-
-
-def unstaged_commits_exist(path):
-    _git = sh.Command("/home/cfg/git/unstaged_changes_exist_for_file.sh")
-    try:
-        _git(path.as_posix())
-    except sh.ErrorReturnCode_1:
-        return True
-    return False
 
 
 def parse_sh_var(*, item, var_name):
