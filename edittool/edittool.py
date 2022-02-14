@@ -414,6 +414,8 @@ def edit(ctx,
         ic('file changed:', path, pre_edit_hash, post_edit_hash,)
     if unstaged_commits_exist(path):
         ic('unstaged_commits_exist() returned True')
+    else:
+        ic('unstaged_commits_exist() returned False')
     if (pre_edit_hash != post_edit_hash) or disable_change_detection or unstaged_commits_exist(path):
         if project_folder:
             os.chdir(project_folder)
