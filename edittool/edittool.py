@@ -59,6 +59,7 @@ from gittool import unstaged_commits_exist
 #from unmp import unmp
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
+from mptool import unmp
 from retry_on_exception import retry_on_exception
 from walkup_until_found import walkup_until_found
 from with_chdir import chdir
@@ -499,7 +500,7 @@ def edit_file(*,
 
 
 @cli.command()
-@click.argument("path", type=click.Path(path_type=Path), nargs=1)
+@click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
 @click.option('--apps-folder', type=str, required=True)
 @click.option('--gentoo-overlay-repo', type=str, required=True)
 @click.option('--github-user', type=str, required=True)
@@ -512,7 +513,7 @@ def edit_file(*,
 @click_add_options(click_global_options)
 @click.pass_context
 def edit(ctx,
-         path: Path,
+         paths: Sequence[Path],
          apps_folder: str,
          gentoo_overlay_repo: str,
          github_user: str,
@@ -536,14 +537,24 @@ def edit(ctx,
         skip_isort = True
         skip_pylint = True
 
-    edit_file(ctx=ctx,
-              path=path,
-              disable_change_detection=disable_change_detection,
-              ignore_pylint=ignore_pylint,
-              skip_pylint=skip_pylint,
-              skip_isort=skip_isort,
-              verbose=verbose,
-              )
+    if paths:
+        iterator = paths
+    else:
+        iterator = unmp(valid_types=[bytes,], verbose=verbose,)
+
+    for index, path in enumerate(iterator):
+        if verbose:
+            ic(index, path)
+
+        edit_file(ctx=ctx,
+                  path=path,
+                  disable_change_detection=disable_change_detection,
+                  ignore_pylint=ignore_pylint,
+                  skip_pylint=skip_pylint,
+                  skip_isort=skip_isort,
+                  verbose=verbose,
+                  )
+
 
 @cli.command()
 @click.argument("path", type=click.Path(path_type=Path), nargs=1)
