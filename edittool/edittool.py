@@ -56,7 +56,7 @@ from configtool import click_read_config
 from eprint import eprint
 from gittool import unstaged_commits_exist
 #from configtool import click_write_config_entry
-#from enumerate_input import enumerate_input
+#from unmp import unmp
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from retry_on_exception import retry_on_exception
@@ -147,7 +147,7 @@ def parse_sh_var(*, item, var_name):
 
 def parse_edit_config(*,
                       path: Path,
-                      verbose: bool,
+                      verbose: Union[bool, int, float],
                       ):
     edit_config = walkup_until_found(path=path.parent, name='.edit_config', verbose=verbose,)
     #ic(edit_config)
@@ -188,7 +188,7 @@ def parse_edit_config(*,
 
 def autogenerate_readme(*,
                         path: Path,
-                        verbose: bool,
+                        verbose: Union[bool, int, float],
                         ):
 
     def append_line_to_readme(line, readme):
@@ -269,7 +269,7 @@ def autogenerate_readme(*,
 def run_pylint(*,
                path: Path,
                ignore_pylint: bool,
-               verbose: int,
+               verbose: Union[bool, int, float],
                ):
     pylint_command = sh.Command('pylint')
     try:
@@ -289,7 +289,7 @@ def run_pylint(*,
 def run_byte_vector_replacer(*,
                              ctx,
                              path: Path,
-                             verbose: int,
+                             verbose: Union[bool, int, float],
                              ) -> None:
 
     pair_dict = get_pairs(verbose=verbose)
@@ -300,7 +300,7 @@ def run_byte_vector_replacer(*,
 
 
 def isort_path(path: Path,
-               verbose: int,
+               verbose: Union[bool, int, float],
                ) -> None:
 
     sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
@@ -310,7 +310,7 @@ def isort_path(path: Path,
 @click_add_options(click_global_options)
 @click.pass_context
 def cli(ctx,
-        verbose: int,
+        verbose: Union[bool, int, float],
         verbose_inf: bool,
         ):
 
@@ -325,7 +325,7 @@ def cli(ctx,
 @click.pass_context
 def isort(ctx,
          paths: tuple[Path, ...],
-         verbose: bool,
+         verbose: Union[bool, int, float],
          verbose_inf: bool,
          ):
 
@@ -357,7 +357,7 @@ def edit(ctx,
          gentoo_overlay_repo: str,
          github_user: str,
          license: str,
-         verbose: bool,
+         verbose: Union[bool, int, float],
          verbose_inf: bool,
          disable_change_detection: bool,
          ignore_pylint: bool,
@@ -414,6 +414,9 @@ def edit(ctx,
         skip_isort = True
 
     run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
+    if path.as_posix().endswith('.py'):
+        if not skip_isort:
+            isort_path(path=path, verbose=verbose)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
@@ -530,7 +533,7 @@ def edit(ctx,
 @click.pass_context
 def generate_readme(ctx,
                     path: Path,
-                    verbose: bool,
+                    verbose: Union[bool, int, float],
                     verbose_inf: bool,
                     ):
 
