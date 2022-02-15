@@ -45,6 +45,7 @@ import sh
 from asserttool import ic
 from asserttool import not_root
 from asserttool import validate_slice
+from byte_vector_replacer import GuardFoundError
 from byte_vector_replacer import byte_vector_replacer
 from byte_vector_replacer import get_pairs
 from click_default_group import DefaultGroup
@@ -292,7 +293,10 @@ def run_byte_vector_replacer(*,
                              ) -> None:
 
     pair_dict = get_pairs(verbose=verbose)
-    byte_vector_replacer(path=path, pair_dict=pair_dict, verbose=verbose)
+    try:
+        byte_vector_replacer(path=path, pair_dict=pair_dict, verbose=verbose)
+    except GuardFoundError as e:
+        ic(e)
 
 
 def isort_path(path: Path,
