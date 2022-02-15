@@ -45,8 +45,8 @@ import sh
 from asserttool import ic
 from asserttool import not_root
 from asserttool import validate_slice
-from byte_vector_replacer.byte_vector_replacer import \
-    cli as byte_vector_replacer
+from byte_vector_replacer import byte_vector_replacer
+from byte_vector_replacer import get_pairs
 from click_default_group import DefaultGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
@@ -289,9 +289,10 @@ def run_byte_vector_replacer(*,
                              ctx,
                              path: Path,
                              verbose: int,
-                             ):
+                             ) -> None:
 
-    ctx.invoke(byte_vector_replacer(paths=(path,), verbose=verbose, ipython=False, verbose_inf=False))
+    pair_dict = get_pairs(verbose=verbose)
+    byte_vector_replacer(path=path, pair_dict=pair_dict, verbose=verbose)
 
 
 def isort_path(path: Path,
