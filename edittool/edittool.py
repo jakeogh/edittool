@@ -348,6 +348,7 @@ def edit_file(*,
               skip_pylint: bool,
               skip_isort: bool,
               ) -> None:
+
     if not path.is_file():
         eprint('ERROR:', path.as_posix(), 'is not a regular file.')
         sys.exit(1)
@@ -545,9 +546,10 @@ def edit(ctx,
     for index, path in enumerate(iterator):
         if verbose:
             ic(index, path)
+        _path = Path(os.fsdecode(path))
 
         edit_file(ctx=ctx,
-                  path=path,
+                  path=_path,
                   disable_change_detection=disable_change_detection,
                   ignore_pylint=ignore_pylint,
                   skip_pylint=skip_pylint,
