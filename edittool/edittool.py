@@ -45,6 +45,8 @@ import sh
 from asserttool import ic
 from asserttool import not_root
 from asserttool import validate_slice
+from byte_vector_replacer.byte_vector_replacer import \
+    cli as byte_vector_replacer
 from click_default_group import DefaultGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
@@ -283,6 +285,15 @@ def run_pylint(*,
                 sys.exit(exit_code)
 
 
+def run_byte_vector_replacer(*,
+                             ctx,
+                             path: Path,
+                             verbose: int,
+                             ):
+
+    ctx.invoke(byte_vector_replacer(ctx=ctx, paths=(path,), verbose=verbose, ipython=False, verbose_inf=False))
+
+
 def isort_path(path: Path,
                verbose: int,
                ) -> None:
@@ -396,6 +407,8 @@ def edit(ctx,
 
     if dont_reformat:
         skip_isort = True
+
+    run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
