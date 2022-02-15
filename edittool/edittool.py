@@ -291,7 +291,7 @@ def run_byte_vector_replacer(*,
                              verbose: int,
                              ):
 
-    ctx.invoke(byte_vector_replacer(ctx=ctx, paths=(path,), verbose=verbose, ipython=False, verbose_inf=False))
+    ctx.invoke(byte_vector_replacer(paths=(path,), verbose=verbose, ipython=False, verbose_inf=False))
 
 
 def isort_path(path: Path,
