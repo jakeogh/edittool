@@ -385,10 +385,10 @@ def edit_file(*,
     if dont_reformat:
         skip_isort = True
 
-    run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
     if path.as_posix().endswith('.py'):
         if not skip_isort:
             isort_path(path=path, verbose=verbose)
+    run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
 
     pre_edit_hash = sha3_256_hash_file(path=path, verbose=verbose,)
     os.system(editor + ' ' + path.as_posix())
