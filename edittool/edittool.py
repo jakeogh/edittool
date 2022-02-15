@@ -338,45 +338,15 @@ def isort(ctx,
         isort_path(path=path, verbose=verbose)
 
 
-@cli.command()
-@click.argument("path", type=click.Path(path_type=Path), nargs=1)
-@click.option('--apps-folder', type=str, required=True)
-@click.option('--gentoo-overlay-repo', type=str, required=True)
-@click.option('--github-user', type=str, required=True)
-@click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
-@click.option('--disable-change-detection', is_flag=True)
-@click.option('--ignore-pylint', is_flag=True)
-@click.option('--skip-isort', is_flag=True)
-@click.option('--skip-pylint', is_flag=True)
-@click.option('--ignore-checks', 'skip_code_checks', is_flag=True)
-@click_add_options(click_global_options)
-@click.pass_context
-def edit(ctx,
-         path: Path,
-         apps_folder: str,
-         gentoo_overlay_repo: str,
-         github_user: str,
-         license: str,
-         verbose: Union[bool, int, float],
-         verbose_inf: bool,
-         disable_change_detection: bool,
-         ignore_pylint: bool,
-         skip_isort: bool,
-         skip_pylint: bool,
-         skip_code_checks: bool,
-         ):
-
-    not_root()
-    tty, verbose = tv(ctx=ctx,
-                      verbose=verbose,
-                      verbose_inf=verbose_inf,
-                      )
-
-    if skip_code_checks:
-        skip_isort = True
-        skip_pylint = True
-
-    path = Path(os.fsdecode(path)).expanduser().resolve()
+def edit_file(*,
+              ctx,
+              path: Path,
+              verbose: Union[bool, int, float],
+              disable_change_detection: bool,
+              ignore_pylint: bool,
+              skip_pylint: bool,
+              skip_isort: bool,
+              ) -> None:
     if not path.is_file():
         eprint('ERROR:', path.as_posix(), 'is not a regular file.')
         sys.exit(1)
@@ -526,6 +496,54 @@ def edit(ctx,
 
         autogenerate_readme(path=path, verbose=verbose,)
 
+
+
+@cli.command()
+@click.argument("path", type=click.Path(path_type=Path), nargs=1)
+@click.option('--apps-folder', type=str, required=True)
+@click.option('--gentoo-overlay-repo', type=str, required=True)
+@click.option('--github-user', type=str, required=True)
+@click.option('--license', type=click.Choice(license_list(verbose=False,)), default="ISC")
+@click.option('--disable-change-detection', is_flag=True)
+@click.option('--ignore-pylint', is_flag=True)
+@click.option('--skip-isort', is_flag=True)
+@click.option('--skip-pylint', is_flag=True)
+@click.option('--ignore-checks', 'skip_code_checks', is_flag=True)
+@click_add_options(click_global_options)
+@click.pass_context
+def edit(ctx,
+         path: Path,
+         apps_folder: str,
+         gentoo_overlay_repo: str,
+         github_user: str,
+         license: str,
+         verbose: Union[bool, int, float],
+         verbose_inf: bool,
+         disable_change_detection: bool,
+         ignore_pylint: bool,
+         skip_isort: bool,
+         skip_pylint: bool,
+         skip_code_checks: bool,
+         ):
+
+    not_root()
+    tty, verbose = tv(ctx=ctx,
+                      verbose=verbose,
+                      verbose_inf=verbose_inf,
+                      )
+
+    if skip_code_checks:
+        skip_isort = True
+        skip_pylint = True
+
+    edit_file(ctx=ctx,
+              path=path,
+              disable_change_detection=disable_change_detection,
+              ignore_pylint=ignore_pylint,
+              skip_pylint=skip_pylint,
+              skip_isort=skip_isort,
+              verbose=verbose,
+              )
 
 @cli.command()
 @click.argument("path", type=click.Path(path_type=Path), nargs=1)
