@@ -61,6 +61,9 @@ from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from mptool import unmp
 from retry_on_exception import retry_on_exception
+# pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
+from sh import ErrorReturnCode_1
+# pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 from walkup_until_found import walkup_until_found
 from with_chdir import chdir
 
@@ -495,10 +498,11 @@ def edit_file(*,
                 help_command = sh.Command(short_package)
             except sh.CommandNotFound as e:
                 ic(e)
-            except sh.ErrorReturnCode_1 as e:
+            except ErrorReturnCode_1 as e:
                 if ignore_exit_code:
                     ic(e)
                 else:
+                    ic(ignore_exit_code)
                     raise e
             else:
                 help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
