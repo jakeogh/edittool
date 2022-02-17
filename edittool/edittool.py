@@ -347,6 +347,7 @@ def edit_file(*,
               ignore_pylint: bool,
               skip_pylint: bool,
               skip_isort: bool,
+              ignore_exit_code: bool,
               ) -> None:
 
     if not path.is_file():
@@ -424,7 +425,7 @@ def edit_file(*,
                 # status 1 to 16 will be bit-ORed
 
         elif path.as_posix().endswith('.ebuild'):
-            with chdir(path.resolve().parent):
+            with chdir(path.resolve().parent, verbose=verbose,):
                 sh.ebuild(path, 'manifest')
                 #sh.git.add(path.parent / Path('Manifest'))
                 sh.git.add(Path('Manifest'))
@@ -494,6 +495,11 @@ def edit_file(*,
                 help_command = sh.Command(short_package)
             except sh.CommandNotFound as e:
                 ic(e)
+            except sh.ErrorReturnCode_1 as e:
+                if ignore_exit_code:
+                    ic(e)
+                else:
+                    raise e
             else:
                 help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
 
@@ -511,6 +517,7 @@ def edit_file(*,
 @click.option('--ignore-pylint', is_flag=True)
 @click.option('--skip-isort', is_flag=True)
 @click.option('--skip-pylint', is_flag=True)
+@click.option('--ignore-exit-code', is_flag=True)
 @click.option('--ignore-checks', 'skip_code_checks', is_flag=True)
 @click_add_options(click_global_options)
 @click.pass_context
@@ -525,6 +532,7 @@ def edit(ctx,
          disable_change_detection: bool,
          ignore_pylint: bool,
          skip_isort: bool,
+         ignore_exit_code: bool,
          skip_pylint: bool,
          skip_code_checks: bool,
          ):
@@ -555,6 +563,7 @@ def edit(ctx,
                   ignore_pylint=ignore_pylint,
                   skip_pylint=skip_pylint,
                   skip_isort=skip_isort,
+                  ignore_exit_code=ignore_exit_code,
                   verbose=verbose,
                   )
 
