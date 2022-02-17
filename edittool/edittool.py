@@ -498,14 +498,15 @@ def edit_file(*,
                 help_command = sh.Command(short_package)
             except sh.CommandNotFound as e:
                 ic(e)
-            except ErrorReturnCode_1 as e:
-                if ignore_exit_code:
-                    ic(e)
-                else:
-                    ic(ignore_exit_code)
-                    raise e
             else:
-                help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+                try:
+                    help_command_result = help_command('--help', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
+                except ErrorReturnCode_1 as e:
+                    if ignore_exit_code:
+                        ic(e)
+                    else:
+                        ic(ignore_exit_code)
+                        raise e
 
         autogenerate_readme(path=path, verbose=verbose,)
 
