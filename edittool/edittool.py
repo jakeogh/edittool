@@ -423,10 +423,11 @@ def edit_file(*,
                 #   * 32 on usage error
                 # status 1 to 16 will be bit-ORed
 
-        elif  path.as_posix().endswith('.ebuild'):
+        elif path.as_posix().endswith('.ebuild'):
             with chdir(path.resolve().parent):
                 sh.ebuild(path, 'manifest')
-                sh.git.add(path.parent / Path('Manifest'))
+                #sh.git.add(path.parent / Path('Manifest'))
+                sh.git.add(Path('Manifest'))
                 sh.git.add(path)
                 #cd "${file_dirname}" # should already be here...
                 try:
