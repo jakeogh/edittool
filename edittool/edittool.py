@@ -429,7 +429,7 @@ def edit_file(*,
                 sh.ebuild(path, 'manifest')
                 #sh.git.add(path.parent / Path('Manifest'))
                 sh.git.add(Path('Manifest'))
-                sh.git.add(path)
+                sh.git.add(path.name)
                 #cd "${file_dirname}" # should already be here...
                 try:
                     sh.repoman('fix', _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _ok_code=[0, 1])
