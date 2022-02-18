@@ -353,6 +353,7 @@ def edit_file(*,
               ignore_exit_code: bool,
               ) -> None:
 
+    path = path.resolve()
     if not path.is_file():
         eprint('ERROR:', path.as_posix(), 'is not a regular file.')
         sys.exit(1)
