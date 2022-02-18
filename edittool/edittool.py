@@ -409,6 +409,7 @@ def edit_file(*,
             #with chdir(project_folder):
             sh.git.diff(_out=sys.stdout, _err=sys.stderr)
 
+        ic(path.as_posix())
         sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
