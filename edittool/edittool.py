@@ -283,7 +283,7 @@ def autogenerate_readme(
             ic(output, errors, exit_code)
 
     append_line_to_readme("\n```\n", readme)
-    if unstaged_commits_exist(readme):
+    if unstaged_commits_exist(readme, verbose=verbose,):
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
         sh.git.add(readme)
         sh.git.commit("-m", "autoupdate README.md")
@@ -494,14 +494,14 @@ def edit_file(
             pre_edit_hash,
             post_edit_hash,
         )
-    if unstaged_commits_exist(path):
+    if unstaged_commits_exist(path, verbose=verbose,):
         ic("unstaged_commits_exist() returned True")
     else:
         ic("unstaged_commits_exist() returned False")
     if (
         (pre_edit_hash != post_edit_hash)
         or disable_change_detection
-        or unstaged_commits_exist(path)
+        or unstaged_commits_exist(path, verbose=verbose)
     ):
         if project_folder:
             os.chdir(project_folder)
