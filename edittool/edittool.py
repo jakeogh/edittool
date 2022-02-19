@@ -56,7 +56,7 @@ from configtool import click_read_config
 from eprint import eprint
 from gittool import unstaged_commits_exist
 #from configtool import click_write_config_entry
-#from unmp import unmp
+#from mptool import unmp
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
 from mptool import unmp
@@ -310,6 +310,12 @@ def isort_path(path: Path,
     sh.isort('--remove-redundant-aliases', '--trailing-comma', '--force-single-line-imports', '--combine-star', '--verbose', path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://pycqa.github.io/isort/
 
 
+def black_path(path: Path,
+              verbose: Union[bool, int, float],
+              ) -> None:
+
+    sh.black(path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)  # https://github.com/psf/black
+
 @click.group(context_settings=CONTEXT_SETTINGS, cls=DefaultGroup, default='edit', default_if_no_args=True)
 @click_add_options(click_global_options)
 @click.pass_context
@@ -350,6 +356,7 @@ def edit_file(*,
               ignore_pylint: bool,
               skip_pylint: bool,
               skip_isort: bool,
+              skip_black: bool,
               ignore_exit_code: bool,
               ) -> None:
 
@@ -389,8 +396,11 @@ def edit_file(*,
 
     if dont_reformat:
         skip_isort = True
+        skip_black = True
 
     if path.as_posix().endswith('.py'):
+        if not skip_black:
+            black_path(path=path, verbose=verbose)
         if not skip_isort:
             isort_path(path=path, verbose=verbose)
     run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
@@ -414,6 +424,8 @@ def edit_file(*,
         sh.chown('user:user', path)  # fails if cant
 
         if path.as_posix().endswith('.py'):
+            if not skip_black:
+                black_path(path=path, verbose=verbose)
             if not skip_isort:
                 isort_path(path=path, verbose=verbose)
 
@@ -523,6 +535,7 @@ def edit_file(*,
 @click.option('--disable-change-detection', is_flag=True)
 @click.option('--ignore-pylint', is_flag=True)
 @click.option('--skip-isort', is_flag=True)
+@click.option('--skip-black', is_flag=True)
 @click.option('--skip-pylint', is_flag=True)
 @click.option('--ignore-exit-code', is_flag=True)
 @click.option('--ignore-checks', 'skip_code_checks', is_flag=True)
@@ -539,6 +552,7 @@ def edit(ctx,
          disable_change_detection: bool,
          ignore_pylint: bool,
          skip_isort: bool,
+         skip_black: bool,
          ignore_exit_code: bool,
          skip_pylint: bool,
          skip_code_checks: bool,
@@ -570,6 +584,7 @@ def edit(ctx,
                   ignore_pylint=ignore_pylint,
                   skip_pylint=skip_pylint,
                   skip_isort=skip_isort,
+                  skip_black=skip_black,
                   ignore_exit_code=ignore_exit_code,
                   verbose=verbose,
                   )
