@@ -708,6 +708,7 @@ def edit(
     ignore_exit_code: bool,
     skip_pylint: bool,
     skip_code_checks: bool,
+    dict_input: bool,
 ):
 
     not_root()
@@ -758,6 +759,7 @@ def generate_readme(
     path: Path,
     verbose: Union[bool, int, float],
     verbose_inf: bool,
+    dict_input: bool,
 ):
 
     not_root()
