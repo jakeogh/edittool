@@ -374,6 +374,7 @@ def cli(
     ctx,
     verbose: Union[bool, int, float],
     verbose_inf: bool,
+    dict_input: bool,
 ):
 
     tty, verbose = tv(
@@ -392,6 +393,7 @@ def isort(
     paths: tuple[Path, ...],
     verbose: Union[bool, int, float],
     verbose_inf: bool,
+    dict_inpuit: bool,
 ):
 
     not_root()
