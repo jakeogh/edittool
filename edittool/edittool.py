@@ -243,6 +243,7 @@ def autogenerate_readme(
     with open(description, "r", encoding="utf8") as fh:
         append_line_to_readme(fh.read(), readme)
 
+    append_line_to_readme("Examples:\n", readme)
     append_line_to_readme(f"```\n$ {short_package}\n", readme)
 
     test_command = sh.Command(short_package)
