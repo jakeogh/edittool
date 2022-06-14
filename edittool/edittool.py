@@ -390,6 +390,15 @@ def cli(
     )
 
 
+def autoformat_python(
+    path: Path, skip_black: bool, skip_isort: bool, verbose: Union[bool, int, float]
+):
+    if not skip_black:
+        black_path(path=path, verbose=verbose)
+    if not skip_isort:
+        isort_path(path=path, verbose=verbose)
+
+
 @cli.command()
 @click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
 @click_add_options(click_global_options)
@@ -480,10 +489,10 @@ def edit_file(
         skip_black = True
 
     if path.as_posix().endswith(".py"):
-        if not skip_black:
-            black_path(path=path, verbose=verbose)
-        if not skip_isort:
-            isort_path(path=path, verbose=verbose)
+        autoformat_python(
+            path=path, skip_black=skip_black, skip_isort=skip_isort, verbose=verbose
+        )
+
     run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
 
     pre_edit_hash = sha3_256_hash_file(
@@ -518,19 +527,13 @@ def edit_file(
             os.chdir(project_folder)
             # with chdir(project_folder):
 
-            ic(os.getcwd())
-            command = sh.git.diff
-            ic(command)
-            command(_out=sys.stdout, _err=sys.stderr)
-
         ic(path.as_posix())
         sh.chown("user:user", path)  # fails if cant
 
         if path.as_posix().endswith(".py"):
-            if not skip_black:
-                black_path(path=path, verbose=verbose)
-            if not skip_isort:
-                isort_path(path=path, verbose=verbose)
+            autoformat_python(
+                path=path, skip_black=skip_black, skip_isort=skip_isort, verbose=verbose
+            )
 
             if not skip_pylint:
                 run_pylint(
@@ -613,6 +616,11 @@ def edit_file(
                 _tee=True,
                 _ok_code=[0, 1],
             )  # TODO
+
+        ic(os.getcwd())
+        command = sh.git.diff
+        ic(command)
+        command(_out=sys.stdout, _err=sys.stderr)
 
         sh.git.add(path)  # covered below too
         sh.git.add("-u")  # all tracked files
