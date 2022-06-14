@@ -22,6 +22,7 @@
 # pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
 # pylint: disable=C0413  # TEMP isort issue [wrong-import-position] Import "from pathlib import Path" should be placed at the top of the module [C0413]
 
+import logging
 import os
 import shutil
 import subprocess
@@ -40,6 +41,7 @@ from typing import Sequence
 from typing import Tuple
 from typing import Union
 
+logging.basicConfig(level=logging.INFO)
 import click
 import sh
 from asserttool import ic
