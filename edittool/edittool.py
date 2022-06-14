@@ -515,6 +515,8 @@ def edit_file(
         if project_folder:
             os.chdir(project_folder)
             # with chdir(project_folder):
+
+            ic(os.getcwd())
             command = sh.git.diff
             ic(command)
             command(_out=sys.stdout, _err=sys.stderr)
