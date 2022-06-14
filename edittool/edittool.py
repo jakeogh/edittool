@@ -515,7 +515,9 @@ def edit_file(
         if project_folder:
             os.chdir(project_folder)
             # with chdir(project_folder):
-            sh.git.diff(_out=sys.stdout, _err=sys.stderr)
+            command = sh.git.diff
+            ic(command)
+            command(_out=sys.stdout, _err=sys.stderr)
 
         ic(path.as_posix())
         sh.chown("user:user", path)  # fails if cant
