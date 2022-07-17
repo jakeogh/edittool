@@ -2,13 +2,13 @@
 # -*- coding: utf8 -*-
 
 # flake8: noqa           # flake8 has no per file settings :(
-# pylint: disable=C0111  # docstrings are always outdated and wrong
+# pylint: disable=missing-docstring  # [C0111] docstrings are always outdated and wrong
 # pylint: disable=C0114  #      Missing module docstring (missing-module-docstring)
-# pylint: disable=W0511  # todo is encouraged
-# pylint: disable=C0301  # line too long
-# pylint: disable=R0902  # too many instance attributes
-# pylint: disable=C0302  # too many lines in module
-# pylint: disable=C0103  # single letter var names, func name too descriptive
+# pylint: disable=fixme              # [W0511] todo is encouraged
+# pylint: disable=line-too-long      # [C0301]
+# pylint: disable=too-many-instance-attributes  # [R0902]
+# pylint: disable=too-many-lines     # [C0302] too many lines in module
+# pylint: disable=invalid-name  # [C0103] single letter var names, func name too descriptive
 # pylint: disable=R0911  # too many return statements
 # pylint: disable=R0912  # too many branches
 # pylint: disable=R0915  # too many statements
@@ -42,6 +42,12 @@ from typing import Tuple
 from typing import Union
 
 logging.basicConfig(level=logging.INFO)
+import errno
+import os
+import pty
+import select
+import subprocess
+
 import click
 import sh
 from asserttool import ic
@@ -87,12 +93,6 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 ic(CFG)
-
-import errno
-import os
-import pty
-import select
-import subprocess
 
 
 def tty_capture(cmd, bytes_input):
@@ -362,6 +362,13 @@ def black_path(
     path: Path,
     verbose: Union[bool, int, float],
 ) -> None:
+
+    guard = b"# disable: black\n"
+    ic(guard)
+    if guard in path.read_bytes():
+        ic(f"skipping black, found guard: {guard}")
+        return
+        # raise GuardFoundError(path.as_posix(), guard)
 
     sh.black(
         path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin
