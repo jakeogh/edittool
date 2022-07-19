@@ -9,37 +9,31 @@
 # pylint: disable=too-many-instance-attributes  # [R0902]
 # pylint: disable=too-many-lines     # [C0302] too many lines in module
 # pylint: disable=invalid-name  # [C0103] single letter var names, func name too descriptive
-# pylint: disable=R0911  # too many return statements
-# pylint: disable=R0912  # too many branches
-# pylint: disable=R0915  # too many statements
-# pylint: disable=R0913  # too many arguments
-# pylint: disable=R1702  # too many nested blocks
-# pylint: disable=R0914  # too many local variables
-# pylint: disable=R0903  # too few public methods
-# pylint: disable=E1101  # no member for base
-# pylint: disable=W0201  # attribute defined outside __init__
-# pylint: disable=R0916  # Too many boolean expressions in if statement
-# pylint: disable=C0305  # Trailing newlines editor should fix automatically, pointless warning
+# pylint: disable=too-many-return-statements      # [R0911]
+# pylint: disable=too-many-branches               # [R0912]
+# pylint: disable=too-many-statements             # [R0915]
+# pylint: disable=too-many-arguments              # [R0913]
+# pylint: disable=too-many-nested-blocks          # [R1702]
+# pylint: disable=too-many-locals                 # [R0914]
+# pylint: disable=too-few-public-methods          # [R0903]
+# pylint: disable=no-member                       # [E1101] no member for base
+# pylint: disable=attribute-defined-outside-init  # [W0201]
+# pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
+
 # pylint: disable=C0413  # TEMP isort issue [wrong-import-position] Import "from pathlib import Path" should be placed at the top of the module [C0413]
+from __future__ import annotations
 
 import logging
 import os
 import shutil
 import subprocess
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-# import time
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
-from typing import ByteString
-from typing import Generator
-from typing import Iterable
-from typing import List
-from typing import Optional
-from typing import Sequence
 from typing import Tuple
-from typing import Union
 
 logging.basicConfig(level=logging.INFO)
 import errno
@@ -76,7 +70,7 @@ from with_chdir import chdir
 signal(SIGPIPE, SIG_DFL)
 # from pathtool import write_line_to_file
 # from configtool import click_write_config_entry
-# from mptool import unmp
+# from unmp import unmp
 
 
 CFG, CONFIG_MTIME = click_read_config(
@@ -153,7 +147,7 @@ def parse_sh_var(*, item, var_name):
 def parse_edit_config(
     *,
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
     edit_config = walkup_until_found(
         path=path.parent,
@@ -199,7 +193,7 @@ def parse_edit_config(
 def autogenerate_readme(
     *,
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
     def append_line_to_readme(line, readme):
         with open(readme, "a", encoding="utf8") as fh:
@@ -300,7 +294,7 @@ def run_pylint(
     *,
     path: Path,
     ignore_pylint: bool,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ):
     pylint_command = sh.Command("pylint")
     try:
@@ -330,7 +324,7 @@ def run_byte_vector_replacer(
     *,
     ctx,
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> None:
 
     pair_dict = get_pairs(verbose=verbose)
@@ -342,7 +336,7 @@ def run_byte_vector_replacer(
 
 def isort_path(
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> None:
 
     sh.isort(
@@ -360,7 +354,7 @@ def isort_path(
 
 def black_path(
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
 ) -> None:
 
     guard = b"# disable: black\n"
@@ -385,7 +379,7 @@ def black_path(
 @click.pass_context
 def cli(
     ctx,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
@@ -398,7 +392,7 @@ def cli(
 
 
 def autoformat_python(
-    path: Path, skip_black: bool, skip_isort: bool, verbose: Union[bool, int, float]
+    path: Path, skip_black: bool, skip_isort: bool, verbose: bool | int | float
 ):
     if not skip_black:
         black_path(path=path, verbose=verbose)
@@ -413,7 +407,7 @@ def autoformat_python(
 def isort(
     ctx,
     paths: tuple[Path, ...],
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_inpuit: bool,
 ):
@@ -432,7 +426,7 @@ def edit_file(
     *,
     ctx,
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     disable_change_detection: bool,
     ignore_pylint: bool,
     skip_pylint: bool,
@@ -729,7 +723,7 @@ def edit(
     gentoo_overlay_repo: str,
     github_user: str,
     license: str,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     disable_change_detection: bool,
     ignore_pylint: bool,
@@ -787,7 +781,7 @@ def edit(
 def generate_readme(
     ctx,
     path: Path,
-    verbose: Union[bool, int, float],
+    verbose: bool | int | float,
     verbose_inf: bool,
     dict_input: bool,
 ):
