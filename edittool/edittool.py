@@ -63,20 +63,20 @@ from clicktool import tv
 from configtool import click_read_config
 from eprint import eprint
 from gittool import unstaged_commits_exist
-# from configtool import click_write_config_entry
-# from mptool import unmp
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
-from mptool import unmp
 from retry_on_exception import retry_on_exception
 # pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 from sh import ErrorReturnCode_1
+from unmp import unmp
 # pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 from walkup_until_found import walkup_until_found
 from with_chdir import chdir
 
 signal(SIGPIPE, SIG_DFL)
 # from pathtool import write_line_to_file
+# from configtool import click_write_config_entry
+# from mptool import unmp
 
 
 CFG, CONFIG_MTIME = click_read_config(
