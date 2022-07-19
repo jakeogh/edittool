@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-# flake8: noqa           # flake8 has no per file settings :(
+
 # pylint: disable=missing-docstring  # [C0111] docstrings are always outdated and wrong
 # pylint: disable=C0114  #      Missing module docstring (missing-module-docstring)
 # pylint: disable=fixme              # [W0511] todo is encouraged
@@ -20,7 +20,6 @@
 # pylint: disable=attribute-defined-outside-init  # [W0201]
 # pylint: disable=too-many-boolean-expressions    # [R0916] in if statement
 
-# pylint: disable=C0413  # TEMP isort issue [wrong-import-position] Import "from pathlib import Path" should be placed at the top of the module [C0413]
 from __future__ import annotations
 
 import logging
