@@ -35,13 +35,11 @@ from pathlib import Path
 from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
-from typing import Tuple
 
 import click
 import sh
 from asserttool import ic
 from asserttool import not_root
-from asserttool import validate_slice
 from byte_vector_replacer import GuardFoundError
 from byte_vector_replacer import byte_vector_replacer
 from byte_vector_replacer import get_pairs
@@ -54,7 +52,7 @@ from eprint import eprint
 from gittool import unstaged_commits_exist
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
-from retry_on_exception import retry_on_exception
+# from retry_on_exception import retry_on_exception
 # pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 from sh import ErrorReturnCode_1
 from unmp import unmp
