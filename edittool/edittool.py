@@ -22,8 +22,11 @@
 
 from __future__ import annotations
 
+import errno
 import logging
 import os
+import pty
+import select
 import shutil
 import subprocess
 import sys
@@ -33,13 +36,6 @@ from signal import SIG_DFL
 from signal import SIGPIPE
 from signal import signal
 from typing import Tuple
-
-logging.basicConfig(level=logging.INFO)
-import errno
-import os
-import pty
-import select
-import subprocess
 
 import click
 import sh
@@ -62,9 +58,11 @@ from retry_on_exception import retry_on_exception
 # pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 from sh import ErrorReturnCode_1
 from unmp import unmp
-# pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 from walkup_until_found import walkup_until_found
 from with_chdir import chdir
+
+# pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
+logging.basicConfig(level=logging.INFO)
 
 signal(SIGPIPE, SIG_DFL)
 # from pathtool import write_line_to_file
