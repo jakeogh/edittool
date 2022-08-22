@@ -424,6 +424,7 @@ def edit_file(
     skip_pylint: bool,
     skip_isort: bool,
     skip_black: bool,
+    non_interactive: bool,
     ignore_exit_code: bool,
 ) -> None:
 
@@ -492,7 +493,8 @@ def edit_file(
         path=path,
         verbose=verbose,
     )
-    os.system(editor + " " + path.as_posix())
+    if not non_interactive:
+        os.system(editor + " " + path.as_posix())
     post_edit_hash = sha3_256_hash_file(
         path=path,
         verbose=verbose,
@@ -701,6 +703,7 @@ def edit_file(
 )
 @click.option("--disable-change-detection", is_flag=True)
 @click.option("--ignore-pylint", is_flag=True)
+@click.option("--non-interactive", is_flag=True)
 @click.option("--skip-isort", is_flag=True)
 @click.option("--skip-black", is_flag=True)
 @click.option("--skip-pylint", is_flag=True)
@@ -719,6 +722,7 @@ def edit(
     verbose_inf: bool,
     disable_change_detection: bool,
     ignore_pylint: bool,
+    non_interactive: bool,
     skip_isort: bool,
     skip_black: bool,
     ignore_exit_code: bool,
@@ -761,6 +765,7 @@ def edit(
             skip_pylint=skip_pylint,
             skip_isort=skip_isort,
             skip_black=skip_black,
+            non_interactive=non_interactive,
             ignore_exit_code=ignore_exit_code,
             verbose=verbose,
         )
