@@ -63,9 +63,6 @@ from with_chdir import chdir
 logging.basicConfig(level=logging.INFO)
 
 signal(SIGPIPE, SIG_DFL)
-# from pathtool import write_line_to_file
-# from configtool import click_write_config_entry
-# from unmp import unmp
 
 
 CFG, CONFIG_MTIME = click_read_config(
