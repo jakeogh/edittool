@@ -373,7 +373,7 @@ def cli(
     ctx,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     tty, verbose = tv(
@@ -401,7 +401,7 @@ def isort(
     paths: tuple[Path, ...],
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_inpuit: bool,
+    dict_output: bool,
 ):
 
     not_root()
@@ -724,7 +724,7 @@ def edit(
     ignore_exit_code: bool,
     skip_pylint: bool,
     skip_code_checks: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     not_root()
@@ -775,7 +775,7 @@ def generate_readme(
     path: Path,
     verbose: bool | int | float,
     verbose_inf: bool,
-    dict_input: bool,
+    dict_output: bool,
 ):
 
     not_root()
