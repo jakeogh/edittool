@@ -2,13 +2,13 @@
 # -*- coding: utf8 -*-
 
 
-# pylint: disable=missing-docstring  # [C0111] docstrings are always outdated and wrong
-# pylint: disable=C0114  #      Missing module docstring (missing-module-docstring)
-# pylint: disable=fixme              # [W0511] todo is encouraged
-# pylint: disable=line-too-long      # [C0301]
+# pylint: disable=missing-docstring         # [C0111] docstrings are always outdated and wrong
+# pylint: disable=missing-module-docstring  # [C0114] Missing module docstring
+# pylint: disable=fixme                     # [W0511] todo is encouraged
+# pylint: disable=line-too-long             # [C0301]
 # pylint: disable=too-many-instance-attributes  # [R0902]
-# pylint: disable=too-many-lines     # [C0302] too many lines in module
-# pylint: disable=invalid-name  # [C0103] single letter var names, func name too descriptive
+# pylint: disable=too-many-lines            # [C0302] too many lines in module
+# pylint: disable=invalid-name              # [C0103] single letter var names, func name too descriptive
 # pylint: disable=too-many-return-statements      # [R0911]
 # pylint: disable=too-many-branches               # [R0912]
 # pylint: disable=too-many-statements             # [R0915]
@@ -556,24 +556,25 @@ def edit_file(
                 sh.git.add(Path("Manifest"))
                 sh.git.add(path.name)
                 # cd "${file_dirname}" # should already be here...
-                try:
-                    sh.repoman(
-                        "fix",
-                        _out=sys.stdout,
-                        _err=sys.stderr,
-                        _in=sys.stdin,
-                        _ok_code=[0, 1],
-                    )
-                except sh.ErrorReturnCode_1 as e:
-                    ic(e)
-                    print(e.stdout)
-                try:
-                    sh.repoman(
-                        _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _ok_code=[0, 1]
-                    )
-                except sh.ErrorReturnCode_1 as e:
-                    ic(e)
-                    print(e.stdout)
+                # dev-util/pkgcheck and dev-util/pkgdev
+                # try:
+                #    sh.repoman(
+                #        "fix",
+                #        _out=sys.stdout,
+                #        _err=sys.stderr,
+                #        _in=sys.stdin,
+                #        _ok_code=[0, 1],
+                #    )
+                # except sh.ErrorReturnCode_1 as e:
+                #    ic(e)
+                #    print(e.stdout)
+                # try:
+                #    sh.repoman(
+                #        _out=sys.stdout, _err=sys.stderr, _in=sys.stdin, _ok_code=[0, 1]
+                #    )
+                # except sh.ErrorReturnCode_1 as e:
+                #    ic(e)
+                #    print(e.stdout)
 
                 sh.git.add("-u", _out=sys.stdout, _err=sys.stderr, _in=sys.stdin)
                 sh.git.commit(
