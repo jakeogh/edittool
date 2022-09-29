@@ -256,11 +256,13 @@ def autogenerate_readme(
             continue
 
         if command == "# <br>":
-            append_line_to_readme(f"\n$ \n", readme)
+            result = ("\n", readme)
         elif command.startswith("#"):
-            append_line_to_readme(f"\n$ {command}", readme)
+            result = (f"\n$ {command}", readme)
         else:
-            append_line_to_readme(f"\n$ {command}\n", readme)
+            result = (f"\n$ {command}\n", readme)
+        ic(result)
+        append_line_to_readme(*result)
 
         with open(readme, "a", encoding="utf8") as fh:
             popen_instance = subprocess.Popen(
