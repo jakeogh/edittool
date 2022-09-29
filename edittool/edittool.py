@@ -255,7 +255,9 @@ def autogenerate_readme(
             tty = True
             continue
 
-        if command.startswith("#"):
+        if command == "# <br>":
+            append_line_to_readme(f"\n$ \n", readme)
+        elif command.startswith("#"):
             append_line_to_readme(f"\n$ {command}", readme)
         else:
             append_line_to_readme(f"\n$ {command}\n", readme)
