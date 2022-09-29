@@ -279,6 +279,8 @@ def autogenerate_readme(
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
         sh.git.add(readme)
         sh.git.commit("-m", "autoupdate README.md")
+        sh.git.status(_out=sys.stdout, _err=sys.stderr)
+
     return
 
 
