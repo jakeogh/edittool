@@ -2,13 +2,13 @@
 # -*- coding: utf8 -*-
 
 
-# pylint: disable=missing-docstring         # [C0111] docstrings are always outdated and wrong
-# pylint: disable=missing-module-docstring  # [C0114] Missing module docstring
-# pylint: disable=fixme                     # [W0511] todo is encouraged
-# pylint: disable=line-too-long             # [C0301]
-# pylint: disable=too-many-instance-attributes  # [R0902]
-# pylint: disable=too-many-lines            # [C0302] too many lines in module
-# pylint: disable=invalid-name              # [C0103] single letter var names, func name too descriptive
+# pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
+# pylint: disable=missing-module-docstring        # [C0114] Missing module docstring
+# pylint: disable=fixme                           # [W0511] todo is encouraged
+# pylint: disable=line-too-long                   # [C0301]
+# pylint: disable=too-many-instance-attributes    # [R0902]
+# pylint: disable=too-many-lines                  # [C0302] too many lines in module
+# pylint: disable=invalid-name                    # [C0103] single letter var names, func name too descriptive
 # pylint: disable=too-many-return-statements      # [R0911]
 # pylint: disable=too-many-branches               # [R0912]
 # pylint: disable=too-many-statements             # [R0915]
@@ -52,18 +52,19 @@ from eprint import eprint
 from gittool import unstaged_commits_exist
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
-# from retry_on_exception import retry_on_exception
-# pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
-from sh import ErrorReturnCode_1
 from unmp import unmp
 from walkup_until_found import walkup_until_found
 from with_chdir import chdir
 
-# pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
+# from retry_on_exception import retry_on_exception
 logging.basicConfig(level=logging.INFO)
 
 signal(SIGPIPE, SIG_DFL)
 
+# pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
+from sh import ErrorReturnCode_1
+
+# pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
 
 CFG, CONFIG_MTIME = click_read_config(
     click_instance=click,
@@ -231,7 +232,7 @@ def autogenerate_readme(
     with open(description, "r", encoding="utf8") as fh:
         append_line_to_readme(fh.read(), readme)
 
-    append_line_to_readme("#### Examples:\n", readme)
+    append_line_to_readme("### Examples:\n", readme)
     append_line_to_readme(f"```\n$ {short_package}\n", readme)
 
     test_command = sh.Command(short_package)
