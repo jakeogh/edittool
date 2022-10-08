@@ -256,8 +256,11 @@ def autogenerate_readme(
             ic(command)
             # colorpipe needs to be inserted after the last |
             _command_split = command.split("|")
+            ic(_command_split)
             _command_split[-1] = "colorpipe " + _command_split[-1]
+            ic(_command_split)
             _command = " | ".join(_command_split)
+            ic(_command)
             # os.system("colorpipe " + command + " >> " + readme.as_posix())
             os.system(command + " >> " + readme.as_posix())
             tty = False
