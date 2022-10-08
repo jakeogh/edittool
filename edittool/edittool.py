@@ -638,6 +638,10 @@ def edit_file(
             )  # TODO
 
         ic(os.getcwd())
+        autogenerate_readme(
+            path=path,
+            verbose=verbose,
+        )
         command = sh.git.diff
         ic(command)
         command(_out=sys.stdout, _err=sys.stderr)
@@ -705,11 +709,6 @@ def edit_file(
                     else:
                         ic(ignore_exit_code)
                         raise e
-
-        autogenerate_readme(
-            path=path,
-            verbose=verbose,
-        )
 
 
 @cli.command()
