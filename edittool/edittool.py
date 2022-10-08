@@ -293,7 +293,7 @@ def autogenerate_readme(
         _postprocessed_readme = _postprocess_readme_command(sh.cat(readme))
         # ic(_postprocessed_readme)
         with open(readme, "w", encoding="utf8") as fh:
-            fh.write(_postprocessed_readme)
+            fh.write(str(_postprocessed_readme))
     if unstaged_commits_exist(
         readme,
         verbose=verbose,
