@@ -212,6 +212,11 @@ def autogenerate_readme(
     description = autogenerate_readme_script.parent / Path(".description.md")
     ic(description)
 
+    _postprocess_readme_script = autogenerate_readme_script.parent / Path(
+        ".postprocess_readme.sh"
+    )
+    ic(_postprocess_readme_script)
+
     (
         edit_config,
         short_package,
@@ -277,13 +282,17 @@ def autogenerate_readme(
             ic(output, errors, exit_code)
 
     append_line_to_readme("\n```\n", readme)
+    if _postprocess_readme_script.exists():
+        _postprocess_readme_command = sh.Command(_postprocess_readme_script)
+        _postprocessed_readme = _postprocess_readme_command(sh.cat(readme))
+        ic(_postprocessed_readme)
     if unstaged_commits_exist(
         readme,
         verbose=verbose,
     ):
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
         sh.git.add(readme)
-        sh.git.commit("-m", "autoupdate README.md")
+        # sh.git.commit("-m", "autoupdate README.md")
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
 
     return
