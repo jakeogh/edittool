@@ -254,6 +254,7 @@ def autogenerate_readme(
             # out, err = tty_capture(command, b'')
             append_line_to_readme(f"\n$ {command}\n", readme)
             ic(command)
+
             # colorpipe needs to be inserted after the last |
             _command_split = command.split("|")
             ic(_command_split)
@@ -262,7 +263,8 @@ def autogenerate_readme(
             _command = " | ".join(_command_split)
             ic(_command)
             # os.system("colorpipe " + command + " >> " + readme.as_posix())
-            os.system(command + " >> " + readme.as_posix())
+            os.system(_command + " >> " + readme.as_posix())
+
             tty = False
             # ic(out, err)
             continue
