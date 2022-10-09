@@ -206,11 +206,14 @@ def autogenerate_readme(
         commands = [cmd.strip() for cmd in fh if cmd.strip()]
     ic(commands)
 
-    readme = autogenerate_readme_script.parent / Path("README.md")
-    ic(readme)
+    readme_md = autogenerate_readme_script.parent / Path("README.md")
+    ic(readme_md)
 
-    description = autogenerate_readme_script.parent / Path(".description.md")
-    ic(description)
+    description_md = autogenerate_readme_script.parent / Path(".description.md")
+    ic(description_md)
+
+    install_md = autogenerate_readme_script.parent / Path(".install.md")
+    ic(install_md)
 
     _postprocess_readme_script = autogenerate_readme_script.parent / Path(
         ".postprocess_readme.sh"
@@ -230,21 +233,24 @@ def autogenerate_readme(
     )
 
     try:
-        readme.unlink()
+        readme_md.unlink()
     except FileNotFoundError:
         pass
 
-    with open(description, "r", encoding="utf8") as fh:
-        append_line_to_readme(fh.read(), readme)
+    with open(description_md, "r", encoding="utf8") as fh:
+        append_line_to_readme(fh.read(), readme_md)
 
-    append_line_to_readme("### Examples:\n", readme)
-    append_line_to_readme(f"```\n$ {short_package}\n", readme)
+    with open(install_md, "r", encoding="utf8") as fh:
+        append_line_to_readme(fh.read(), readme_md)
+
+    append_line_to_readme("### Examples:\n", readme_md)
+    append_line_to_readme(f"```\n$ {short_package}\n", readme_md)
 
     test_command = sh.Command(short_package)
     ic(test_command)
     test_command = test_command.bake(test_command_arg)
     ic(test_command)
-    with open(readme, "a", encoding="utf8") as fh:
+    with open(readme_md, "a", encoding="utf8") as fh:
         test_command(_err=fh, _ok_code=[0, 1])
 
     tty = False
@@ -252,7 +258,7 @@ def autogenerate_readme(
         ic(command)
         if tty:
             # out, err = tty_capture(command, b'')
-            append_line_to_readme(f"\n$ {command}\n", readme)
+            append_line_to_readme(f"\n$ {command}\n", readme_md)
             ic(command)
 
             # colorpipe needs to be inserted after the last |
@@ -263,7 +269,7 @@ def autogenerate_readme(
             _command = " | ".join(_command_split)
             ic(_command)
             # os.system("colorpipe " + command + " >> " + readme.as_posix())
-            os.system(_command + " >> " + readme.as_posix())
+            os.system(_command + " >> " + readme_md.as_posix())
 
             tty = False
             # ic(out, err)
@@ -273,15 +279,15 @@ def autogenerate_readme(
             continue
 
         if command == "# <br>":
-            result = ("\n", readme)
+            result = ("\n", readme_md)
         elif command.startswith("#"):
-            result = (f"\n$ {command}", readme)
+            result = (f"\n$ {command}", readme_md)
         else:
-            result = (f"\n$ {command}\n", readme)
+            result = (f"\n$ {command}\n", readme_md)
         ic(result)
         append_line_to_readme(*result)
 
-        with open(readme, "a", encoding="utf8") as fh:
+        with open(readme_md, "a", encoding="utf8") as fh:
             popen_instance = subprocess.Popen(
                 command,
                 stdout=fh,
@@ -292,19 +298,19 @@ def autogenerate_readme(
             exit_code = popen_instance.returncode
             ic(output, errors, exit_code)
 
-    append_line_to_readme("\n```\n", readme)
+    append_line_to_readme("\n```\n", readme_md)
     if _postprocess_readme_script.exists():
         _postprocess_readme_command = sh.Command(_postprocess_readme_script)
-        _postprocessed_readme = _postprocess_readme_command(sh.cat(readme))
+        _postprocessed_readme = _postprocess_readme_command(sh.cat(readme_md))
         # ic(_postprocessed_readme)
-        with open(readme, "w", encoding="utf8") as fh:
+        with open(readme_md, "w", encoding="utf8") as fh:
             fh.write(str(_postprocessed_readme))
     if unstaged_commits_exist(
-        readme,
+        readme_md,
         verbose=verbose,
     ):
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
-        sh.git.add(readme)
+        sh.git.add(readme_md)
         # sh.git.commit("-m", "autoupdate README.md")
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
 
