@@ -221,6 +221,10 @@ def autogenerate_readme(
         ".postprocess_readme.sh"
     )
     ic(_postprocess_readme_script)
+    _validate_readme_script = autogenerate_readme_script.parent / Path(
+        ".validate_readme.sh"
+    )
+    ic(_validate_readme_script)
 
     (
         edit_config,
@@ -305,6 +309,12 @@ def autogenerate_readme(
     if _postprocess_readme_script.exists():
         _postprocess_readme_command = sh.Command(_postprocess_readme_script)
         _postprocessed_readme = _postprocess_readme_command(sh.cat(readme_md))
+        # ic(_postprocessed_readme)
+        with open(readme_md, "w", encoding="utf8") as fh:
+            fh.write(str(_postprocessed_readme))
+    if _validate_readme_script.exists():
+        _validate_readme_command = sh.Command(_validate_readme_script)
+        _postprocessed_readme = _validate_readme_command(sh.cat(readme_md))
         # ic(_postprocessed_readme)
         with open(readme_md, "w", encoding="utf8") as fh:
             fh.write(str(_postprocessed_readme))
