@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf8 -*-
 
-
+# pylint: disable=useless-suppression             # [I0021]
 # pylint: disable=missing-docstring               # [C0111] docstrings are always outdated and wrong
 # pylint: disable=missing-module-docstring        # [C0114] Missing module docstring
 # pylint: disable=fixme                           # [W0511] todo is encouraged
@@ -52,6 +52,7 @@ from eprint import eprint
 from gittool import unstaged_commits_exist
 from hashtool import sha3_256_hash_file
 from licenseguesser import license_list
+from portagetool import package_atom_installed
 from unmp import unmp
 from walkup_until_found import walkup_until_found
 from with_chdir import chdir
@@ -80,6 +81,11 @@ CONTEXT_SETTINGS = dict(default_map=CFG)
 
 
 ic(CFG)
+
+
+def append_line_to_readme(*, line: str, readme: Path):
+    with open(readme, "a", encoding="utf8") as fh:
+        fh.write(line)
 
 
 def tty_capture(cmd, bytes_input):
@@ -188,10 +194,6 @@ def autogenerate_readme(
     path: Path,
     verbose: bool | int | float,
 ):
-    def append_line_to_readme(line, readme):
-        with open(readme, "a", encoding="utf8") as fh:
-            fh.write(line)
-
     try:
         autogenerate_readme_script = walkup_until_found(
             path=path.parent,
@@ -200,6 +202,22 @@ def autogenerate_readme(
         )
     except FileNotFoundError as e:
         ic(e)
+        return
+
+    (
+        edit_config,
+        short_package,
+        group,
+        remote,
+        test_command_arg,
+        dont_reformat,
+    ) = parse_edit_config(
+        path=path,
+        verbose=verbose,
+    )
+
+    package_atom = f"{group}/{short_package}"
+    if not package_atom_installed(package_atom):
         return
 
     with open(autogenerate_readme_script, "r", encoding="utf8") as fh:
@@ -226,32 +244,20 @@ def autogenerate_readme(
     )
     ic(_validate_readme_script)
 
-    (
-        edit_config,
-        short_package,
-        group,
-        remote,
-        test_command_arg,
-        dont_reformat,
-    ) = parse_edit_config(
-        path=path,
-        verbose=verbose,
-    )
-
     try:
         readme_md.unlink()
     except FileNotFoundError:
         pass
 
     with open(description_md, "r", encoding="utf8") as fh:
-        append_line_to_readme(readme_comment, readme_md)
-        append_line_to_readme(fh.read(), readme_md)
+        append_line_to_readme(line=readme_comment, readme=readme_md)
+        append_line_to_readme(line=fh.read(), readme=readme_md)
 
     with open(install_md, "r", encoding="utf8") as fh:
-        append_line_to_readme(fh.read(), readme_md)
+        append_line_to_readme(line=fh.read(), readme=readme_md)
 
-    append_line_to_readme("### Examples:\n", readme_md)
-    append_line_to_readme(f"```\n$ {short_package}\n", readme_md)
+    append_line_to_readme(line="### Examples:\n", readme=readme_md)
+    append_line_to_readme(line=f"```\n$ {short_package}\n", readme=readme_md)
 
     test_command = sh.Command(short_package)
     ic(test_command)
@@ -265,7 +271,7 @@ def autogenerate_readme(
         ic(command)
         if tty:
             # out, err = tty_capture(command, b'')
-            append_line_to_readme(f"\n$ {command}\n", readme_md)
+            append_line_to_readme(line=f"\n$ {command}\n", readme=readme_md)
             ic(command)
 
             # colorpipe needs to be inserted after the last |
@@ -292,7 +298,9 @@ def autogenerate_readme(
         else:
             result = (f"\n$ {command}\n", readme_md)
         ic(result)
-        append_line_to_readme(*result)
+
+        _result = {"line": result[0], "readme": result[1]}
+        append_line_to_readme(**_result)
 
         with open(readme_md, "a", encoding="utf8") as fh:
             popen_instance = subprocess.Popen(
@@ -305,7 +313,7 @@ def autogenerate_readme(
             exit_code = popen_instance.returncode
             ic(output, errors, exit_code)
 
-    append_line_to_readme("\n```\n", readme_md)
+    append_line_to_readme(line="\n```\n", readme=readme_md)
     if _postprocess_readme_script.exists():
         _postprocess_readme_command = sh.Command(_postprocess_readme_script)
         _postprocessed_readme = _postprocess_readme_command(sh.cat(readme_md))
