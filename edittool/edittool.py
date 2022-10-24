@@ -62,10 +62,10 @@ logging.basicConfig(level=logging.INFO)
 
 signal(SIGPIPE, SIG_DFL)
 
-# pylint: disable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
+# pylint: disable=no-name-in-module  # E0611 # No name 'ErrorReturnCode_1' in module 'sh'
 from sh import ErrorReturnCode_1
 
-# pylint: enable=E0611 # No name 'ErrorReturnCode_1' in module 'sh' (no-name-in-module)
+# pylint: enable=no-name-in-module
 
 CFG, CONFIG_MTIME = click_read_config(
     click_instance=click,
