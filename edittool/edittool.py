@@ -258,6 +258,7 @@ def autogenerate_readme(
 
     append_line_to_readme(line="### Examples:\n", readme=readme_md)
     # append_line_to_readme(line=f"```\n$ {short_package}\n", readme=readme_md)
+    append_line_to_readme(line=f"```\n", readme=readme_md)
 
     # test_command = sh.Command(short_package)
     # ic(test_command)
