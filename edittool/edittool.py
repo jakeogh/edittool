@@ -529,7 +529,10 @@ def edit_file(
             path=path,
             verbose=verbose,
         )
-        project_folder = edit_config.parent
+        if edit_config:
+            project_folder = edit_config.parent
+        else:
+            raise FileNotFoundError
     except FileNotFoundError:
         if not path.as_posix().endswith(".ebuild"):
             ic("NO .edit_config found, and its not an ebuild, exiting...")
