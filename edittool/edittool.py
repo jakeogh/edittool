@@ -512,7 +512,7 @@ def edit_file(
     if verbose:
         ic(editor, path)
 
-    edit_config = None
+    edit_config: Path | None = None
     project_folder = None
     group = None
     remote = None
@@ -727,6 +727,7 @@ def edit_file(
             #    ),
             #    _fg=True,
             # )
+
             sh.sudo.portagetool(
                 "install",
                 "--oneshot",
