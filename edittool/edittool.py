@@ -694,6 +694,7 @@ def edit_file(
             staged_but_uncomitted_changes_exist_command = sh.git.diff(
                 "--cached", "--exit-code"
             )
+            ic(staged_but_uncomitted_changes_exist_command)
         except sh.ErrorReturnCode_1:
             ic("comitting")
             sh.git.add("-u")  # all tracked files
