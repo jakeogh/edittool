@@ -686,7 +686,7 @@ def edit_file(
             ic("comitting")
             sh.git.add("-u")  # all tracked files
             sh.git.commit("--verbose", "-m", "auto-commit")
-            if remote and Path(edit_config.parent / Path(".push_enabled")).is_file():
+            if remote and Path(edit_config.parent / Path(".enable_push")).is_file():
                 try:
                     sh.git.push()
                     sh.sudo.emaint("sync", "-A", _fg=True)
@@ -698,7 +698,7 @@ def edit_file(
 
             else:
                 ic(
-                    ".push_enabled not found: push is not enabled, changes comitted locally"
+                    ".enable_push not found: push is not enabled, changes comitted locally"
                 )
 
             # with sh.contrib.sudo:
