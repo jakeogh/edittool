@@ -70,7 +70,6 @@ from sh import ErrorReturnCode_1
 CFG, CONFIG_MTIME = click_read_config(
     click_instance=click,
     app_name="edittool",
-    verbose=False,
 )
 
 
@@ -146,12 +145,11 @@ def parse_sh_var(*, item, var_name):
 def parse_edit_config(
     *,
     path: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     edit_config = walkup_until_found(
         path=path.parent,
         name=".edit_config",
-        verbose=verbose,
     )
     # ic(edit_config)
 
@@ -179,12 +177,11 @@ def parse_edit_config(
         if not dont_reformat:
             dont_reformat = parse_sh_var(item=item, var_name="dont_reformat")
 
-    if verbose:
-        ic(short_package)
-        ic(group)
-        ic(remote)
-        ic(test_command_arg)
-        ic(dont_reformat)
+    ic(short_package)
+    ic(group)
+    ic(remote)
+    ic(test_command_arg)
+    ic(dont_reformat)
 
     return edit_config, short_package, group, remote, test_command_arg, dont_reformat
 
@@ -192,13 +189,12 @@ def parse_edit_config(
 def autogenerate_readme(
     *,
     path: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     try:
         autogenerate_readme_script = walkup_until_found(
             path=path.parent,
             name=".autogenerate_readme.sh",
-            verbose=verbose,
         )
     except FileNotFoundError as e:
         ic(e)
@@ -213,7 +209,6 @@ def autogenerate_readme(
         dont_reformat,
     ) = parse_edit_config(
         path=path,
-        verbose=verbose,
     )
 
     package_atom = f"{group}/{short_package}"
@@ -327,10 +322,7 @@ def autogenerate_readme(
         # ic(_postprocessed_readme)
         with open(readme_md, "w", encoding="utf8") as fh:
             fh.write(str(_postprocessed_readme))
-    if unstaged_commits_exist(
-        readme_md,
-        verbose=verbose,
-    ):
+    if unstaged_commits_exist(readme_md):
         sh.git.status(_out=sys.stdout, _err=sys.stderr)
         sh.git.add(readme_md)
         # sh.git.commit("-m", "autoupdate README.md")
@@ -343,7 +335,7 @@ def run_pylint(
     *,
     path: Path,
     ignore_pylint: bool,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ):
     pylint_command = sh.Command("pylint")
     try:
@@ -373,21 +365,19 @@ def run_byte_vector_replacer(
     *,
     ctx,
     path: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> None:
-
-    pair_dict = get_pairs(verbose=verbose)
+    pair_dict = get_pairs()
     try:
-        byte_vector_replacer(path=path, pair_dict=pair_dict, verbose=verbose)
+        byte_vector_replacer(path=path, pair_dict=pair_dict)
     except GuardFoundError as e:
         ic(e)
 
 
 def isort_path(
     path: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> None:
-
     sh.isort(
         "--remove-redundant-aliases",
         "--trailing-comma",
@@ -403,9 +393,8 @@ def isort_path(
 
 def black_path(
     path: Path,
-    verbose: bool | int | float,
+    verbose: bool | int | float = False,
 ) -> None:
-
     guard = b"# disable: black\n"
     ic(guard)
     if guard in path.read_bytes():
@@ -428,11 +417,10 @@ def black_path(
 @click.pass_context
 def cli(
     ctx,
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
-
     tty, verbose = tv(
         ctx=ctx,
         verbose=verbose,
@@ -441,12 +429,15 @@ def cli(
 
 
 def autoformat_python(
-    path: Path, skip_black: bool, skip_isort: bool, verbose: bool | int | float
+    path: Path,
+    skip_black: bool,
+    skip_isort: bool,
+    verbose: bool | int | float = False,
 ):
     if not skip_black:
-        black_path(path=path, verbose=verbose)
+        black_path(path=path)
     if not skip_isort:
-        isort_path(path=path, verbose=verbose)
+        isort_path(path=path)
 
 
 @cli.command()
@@ -456,11 +447,10 @@ def autoformat_python(
 def isort(
     ctx,
     paths: tuple[Path, ...],
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -468,14 +458,13 @@ def isort(
         verbose_inf=verbose_inf,
     )
     for path in paths:
-        isort_path(path=path, verbose=verbose)
+        isort_path(path=path)
 
 
 def edit_file(
     *,
     ctx,
     path: Path,
-    verbose: bool | int | float,
     disable_change_detection: bool,
     ignore_pylint: bool,
     skip_pylint: bool,
@@ -483,8 +472,8 @@ def edit_file(
     skip_black: bool,
     non_interactive: bool,
     ignore_exit_code: bool,
+    verbose: bool | int | float = False,
 ) -> None:
-
     path = path.resolve()
     if not path.is_file():
         eprint("ERROR:", path.as_posix(), "is not a regular file.")
@@ -526,7 +515,6 @@ def edit_file(
             dont_reformat,
         ) = parse_edit_config(
             path=path,
-            verbose=verbose,
         )
         project_folder = edit_config.parent
     except FileNotFoundError:
@@ -540,20 +528,21 @@ def edit_file(
 
     if path.as_posix().endswith(".py"):
         autoformat_python(
-            path=path, skip_black=skip_black, skip_isort=skip_isort, verbose=verbose
+            path=path,
+            skip_black=skip_black,
+            skip_isort=skip_isort,
         )
 
-    run_byte_vector_replacer(ctx=ctx, path=path, verbose=verbose)
-
-    pre_edit_hash = sha3_256_hash_file(
+    run_byte_vector_replacer(
+        ctx=ctx,
         path=path,
-        verbose=verbose,
     )
+
+    pre_edit_hash = sha3_256_hash_file(path=path)
     if not non_interactive:
         os.system(editor + " " + path.as_posix())
     post_edit_hash = sha3_256_hash_file(
         path=path,
-        verbose=verbose,
     )
     if pre_edit_hash != post_edit_hash:
         ic(
@@ -564,7 +553,6 @@ def edit_file(
         )
     if unstaged_commits_exist(
         path,
-        verbose=verbose,
     ):
         ic("unstaged_commits_exist() returned True")
     else:
@@ -572,7 +560,7 @@ def edit_file(
     if (
         (pre_edit_hash != post_edit_hash)
         or disable_change_detection
-        or unstaged_commits_exist(path, verbose=verbose)
+        or unstaged_commits_exist(path)
     ):
         if project_folder:
             os.chdir(project_folder)
@@ -583,14 +571,15 @@ def edit_file(
 
         if path.as_posix().endswith(".py"):
             autoformat_python(
-                path=path, skip_black=skip_black, skip_isort=skip_isort, verbose=verbose
+                path=path,
+                skip_black=skip_black,
+                skip_isort=skip_isort,
             )
 
             if not skip_pylint:
                 run_pylint(
                     path=path,
                     ignore_pylint=ignore_pylint,
-                    verbose=verbose,
                 )
                 # Pylint should leave with following status code:
                 #   * 0 if everything went fine
@@ -605,7 +594,6 @@ def edit_file(
         elif path.as_posix().endswith(".ebuild"):
             with chdir(
                 path.resolve().parent,
-                verbose=verbose,
             ):
                 sh.ebuild(path, "manifest")
                 # sh.git.add(path.parent / Path('Manifest'))
@@ -672,7 +660,6 @@ def edit_file(
         ic(os.getcwd())
         autogenerate_readme(
             path=path,
-            verbose=verbose,
         )
         command = sh.git.diff
         ic(command)
@@ -782,7 +769,6 @@ def edit(
     gentoo_overlay_repo: str,
     github_user: str,
     license: str,
-    verbose: bool | int | float,
     verbose_inf: bool,
     disable_change_detection: bool,
     ignore_pylint: bool,
@@ -793,8 +779,8 @@ def edit(
     skip_pylint: bool,
     skip_code_checks: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -813,12 +799,10 @@ def edit(
             valid_types=[
                 bytes,
             ],
-            verbose=verbose,
         )
 
     for index, path in enumerate(iterator):
-        if verbose:
-            ic(index, path)
+        ic(index, path)
         _path = Path(os.fsdecode(path))
 
         edit_file(
@@ -831,7 +815,6 @@ def edit(
             skip_black=skip_black,
             non_interactive=non_interactive,
             ignore_exit_code=ignore_exit_code,
-            verbose=verbose,
         )
 
 
@@ -842,11 +825,10 @@ def edit(
 def generate_readme(
     ctx,
     path: Path,
-    verbose: bool | int | float,
     verbose_inf: bool,
     dict_output: bool,
+    verbose: bool | int | float = False,
 ):
-
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -859,4 +841,4 @@ def generate_readme(
         eprint("ERROR:", path.as_posix(), "is not a regular file.")
         sys.exit(1)
 
-    autogenerate_readme(path=path, verbose=verbose)
+    autogenerate_readme(path=path)
