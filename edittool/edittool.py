@@ -473,6 +473,7 @@ def edit_file(
     skip_pylint: bool,
     skip_isort: bool,
     skip_black: bool,
+    skip_text_replace: bool,
     non_interactive: bool,
     ignore_exit_code: bool,
     verbose: bool | int | float = False,
@@ -536,10 +537,11 @@ def edit_file(
             skip_isort=skip_isort,
         )
 
-    run_byte_vector_replacer(
-        ctx=ctx,
-        path=path,
-    )
+    if not skip_text_replace:
+        run_byte_vector_replacer(
+            ctx=ctx,
+            path=path,
+        )
 
     pre_edit_hash = sha3_256_hash_file(path=path)
     if not non_interactive:
@@ -761,6 +763,7 @@ def edit_file(
 @click.option("--skip-isort", is_flag=True)
 @click.option("--skip-black", is_flag=True)
 @click.option("--skip-pylint", is_flag=True)
+@click.option("--skip-text-replace", is_flag=True)
 @click.option("--ignore-exit-code", is_flag=True)
 @click.option("--ignore-checks", "skip_code_checks", is_flag=True)
 @click_add_options(click_global_options)
@@ -778,6 +781,7 @@ def edit(
     non_interactive: bool,
     skip_isort: bool,
     skip_black: bool,
+    skip_text_replace: bool,
     ignore_exit_code: bool,
     skip_pylint: bool,
     skip_code_checks: bool,
@@ -816,6 +820,7 @@ def edit(
             skip_pylint=skip_pylint,
             skip_isort=skip_isort,
             skip_black=skip_black,
+            skip_text_replace=skip_text_replace,
             non_interactive=non_interactive,
             ignore_exit_code=ignore_exit_code,
         )
