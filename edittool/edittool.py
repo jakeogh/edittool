@@ -808,6 +808,10 @@ def edit(
             ],
         )
 
+    width, height = shutil.get_terminal_size((80, 20))
+    for _ in range(height):
+        print("")
+
     for index, path in enumerate(iterator):
         ic(index, path)
         _path = Path(os.fsdecode(path))
