@@ -164,6 +164,7 @@ def parse_edit_config(
     remote = None
     test_command_arg = None
     dont_reformat = None
+    install_command = None
     for item in edit_config_content:
         # ic(item)
         if not short_package:
@@ -176,14 +177,25 @@ def parse_edit_config(
             test_command_arg = parse_sh_var(item=item, var_name="test_command_arg")
         if not dont_reformat:
             dont_reformat = parse_sh_var(item=item, var_name="dont_reformat")
+        if not install_command:
+            install_command = parse_sh_var(item=item, var_name="install_command")
 
     ic(short_package)
     ic(group)
     ic(remote)
     ic(test_command_arg)
     ic(dont_reformat)
+    ic(install_command)
 
-    return edit_config, short_package, group, remote, test_command_arg, dont_reformat
+    return (
+        edit_config,
+        short_package,
+        group,
+        remote,
+        test_command_arg,
+        dont_reformat,
+        install_command,
+    )
 
 
 def autogenerate_readme(
@@ -517,6 +529,7 @@ def edit_file(
             remote,
             test_command_arg,
             dont_reformat,
+            install_command,
         ) = parse_edit_config(
             path=path,
         )
@@ -604,6 +617,9 @@ def edit_file(
                 # sh.git.add(path.parent / Path('Manifest'))
                 sh.git.add(Path("Manifest"))
                 sh.git.add(path.name)
+                _files = Path(path / Path("files"))
+                if _files.exists():
+                    sh.git.add("files/*")
                 # cd "${file_dirname}" # should already be here...
                 # dev-util/pkgcheck and dev-util/pkgdev
                 # try:
@@ -706,26 +722,15 @@ def edit_file(
                     ".enable_push not found: push is not enabled, changes comitted locally"
                 )
 
-            # with sh.contrib.sudo:
-            #    sh.emerge('--tree', '--quiet-build=y', '--usepkg=n', '-1', '{group}/{short_package}'.format(group=group, short_package=short_package), _out=sys.stdout, _err=sys.stderr)
-
-            # sh.sudo.emerge(
-            #    "--tree",
-            #    "--quiet-build=y",
-            #    "--usepkg=n",
-            #    "-1",
-            #    "{group}/{short_package}".format(
-            #        group=group, short_package=short_package
-            #    ),
-            #    _fg=True,
-            # )
-
-            sh.sudo.portagetool(
-                "install",
-                "--oneshot",
-                f"{group}/{short_package}",
-                _fg=True,
-            )
+            if install_command:
+                os.system(install_command)
+            else:
+                sh.sudo.portagetool(
+                    "install",
+                    "--oneshot",
+                    f"{group}/{short_package}",
+                    _fg=True,
+                )
             try:
                 help_command = sh.Command(short_package)
             except sh.CommandNotFound as e:
