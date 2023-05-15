@@ -219,6 +219,7 @@ def autogenerate_readme(
         remote,
         test_command_arg,
         dont_reformat,
+        install_command,
     ) = parse_edit_config(
         path=path,
     )
