@@ -794,6 +794,9 @@ def edit(
     dict_output: bool,
     verbose: bool | int | float = False,
 ):
+    if not verbose:
+        ic.disable()
+
     not_root()
     tty, verbose = tv(
         ctx=ctx,
@@ -847,6 +850,9 @@ def generate_readme(
     dict_output: bool,
     verbose: bool | int | float = False,
 ):
+    if not verbose:
+        ic.disable()
+
     not_root()
     tty, verbose = tv(
         ctx=ctx,
