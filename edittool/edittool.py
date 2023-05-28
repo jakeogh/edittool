@@ -38,7 +38,9 @@ from signal import signal
 
 import click
 import sh
+from asserttool import gvd
 from asserttool import ic
+from asserttool import icp
 from asserttool import not_root
 from byte_vector_replacer import GuardFoundError
 from byte_vector_replacer import byte_vector_replacer
@@ -537,7 +539,7 @@ def edit_file(
         project_folder = edit_config.parent
     except FileNotFoundError:
         if not path.as_posix().endswith(".ebuild"):
-            ic("NO .edit_config found, and its not an ebuild, exiting...")
+            icp("NO .edit_config found, and its not an ebuild, exiting...")
             return
 
     if dont_reformat:
@@ -822,7 +824,7 @@ def edit(
         print("")
 
     for index, path in enumerate(iterator):
-        ic(index, path)
+        icp(index, path)
         _path = Path(os.fsdecode(path))
 
         edit_file(
