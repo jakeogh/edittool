@@ -355,7 +355,11 @@ def run_pylint(
     ignore_pylint: bool,
     verbose: bool | int | float = False,
 ):
+    # pylint: disable=too-many-function-args
+    git_py_files = " ".join(sh.git("ls-files", "*.py").strip().split('\n'))
+    # pylint: enable=too-many-function-args
     pylint_command = sh.Command("pylint")
+    pylint_command.bake('--output-format=colorized', git_py_files)
     try:
         pylint_result = pylint_command(path, _ok_code=[0])
         icp(pylint_result)
