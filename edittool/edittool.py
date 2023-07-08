@@ -716,7 +716,7 @@ def edit_file(
             ic("comitting")
             sh.git.add("-u")  # all tracked files
             sh.git.commit("--verbose", "-m", "auto-commit")
-            if remote and Path(edit_config.parent / Path(".enable_push")).is_file():
+            if remote and Path(edit_config.parent / Path(".push_enabled")).is_file():
                 try:
                     sh.git.push()
                     sh.sudo.emaint("sync", "-A", _fg=True)
