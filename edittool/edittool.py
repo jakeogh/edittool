@@ -358,14 +358,16 @@ def run_pylint(
     pylint_command = sh.Command("pylint")
     try:
         pylint_result = pylint_command(path, _ok_code=[0])
+        icp(pylint_result)
         sh.grep(
             "--color",
             "-E",
             ": E|$",
             _out=sys.stdout,
             _err=sys.stderr,
-            _in=pylint_result.stdout,
+            _in=pylint_result,
         )
+            #_in=pylint_result.stdout,
 
     except sh.ErrorReturnCode as e:
         ic(e.exit_code)
