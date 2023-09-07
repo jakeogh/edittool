@@ -356,10 +356,10 @@ def run_pylint(
     verbose: bool | int | float = False,
 ):
     # pylint: disable=too-many-function-args
-    git_py_files = " ".join(sh.git("ls-files", "*.py").strip().split('\n'))
+    git_py_files = " ".join(sh.git("ls-files", "*.py").strip().split("\n"))
     # pylint: enable=too-many-function-args
     pylint_command = sh.Command("pylint")
-    pylint_command.bake('--output-format=colorized', git_py_files)
+    pylint_command.bake("--output-format=colorized", git_py_files)
     try:
         pylint_result = pylint_command(path, _ok_code=[0])
         icp(pylint_result)
@@ -371,7 +371,7 @@ def run_pylint(
             _err=sys.stderr,
             _in=pylint_result,
         )
-            #_in=pylint_result.stdout,
+        # _in=pylint_result.stdout,
 
     except sh.ErrorReturnCode as e:
         ic(e.exit_code)
@@ -422,7 +422,7 @@ def black_path(
     guard = b"# disable: black\n"
     ic(guard)
     if guard in path.read_bytes():
-        ic(f"skipping black, found guard: {guard}")
+        ic(f"skipping black, found guard: {guard!r}")
         return
         # raise GuardFoundError(path.as_posix(), guard)
 
@@ -727,9 +727,7 @@ def edit_file(
                     ic("remote not found")
 
             else:
-                ic(
-                    ".push not found: push is not enabled, changes comitted locally"
-                )
+                ic(".push not found: push is not enabled, changes comitted locally")
 
             if install_command:
                 os.system(install_command)
