@@ -147,7 +147,7 @@ def parse_sh_var(*, item, var_name):
 def parse_edit_config(
     *,
     path: Path,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     edit_config = walkup_until_found(
         path=path.parent,
@@ -203,7 +203,7 @@ def parse_edit_config(
 def autogenerate_readme(
     *,
     path: Path,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     try:
         autogenerate_readme_script = walkup_until_found(
@@ -353,7 +353,7 @@ def run_pylint(
     *,
     path: Path,
     ignore_pylint: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     # pylint: disable=too-many-function-args
     git_py_files = " ".join(sh.git("ls-files", "*.py").strip().split("\n"))
@@ -389,7 +389,7 @@ def run_byte_vector_replacer(
     *,
     ctx,
     path: Path,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> None:
     pair_dict = get_pairs()
     try:
@@ -400,7 +400,7 @@ def run_byte_vector_replacer(
 
 def isort_path(
     path: Path,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> None:
     sh.isort(
         "--remove-redundant-aliases",
@@ -417,7 +417,7 @@ def isort_path(
 
 def black_path(
     path: Path,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> None:
     guard = b"# disable: black\n"
     ic(guard)
@@ -443,7 +443,7 @@ def cli(
     ctx,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     tty, verbose = tv(
         ctx=ctx,
@@ -456,7 +456,7 @@ def autoformat_python(
     path: Path,
     skip_black: bool,
     skip_isort: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     if not skip_black:
         black_path(path=path)
@@ -473,7 +473,7 @@ def isort(
     paths: tuple[Path, ...],
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     not_root()
     tty, verbose = tv(
@@ -497,7 +497,7 @@ def edit_file(
     skip_text_replace: bool,
     non_interactive: bool,
     ignore_exit_code: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ) -> None:
     path = path.resolve()
     if not path.is_file():
@@ -798,7 +798,7 @@ def edit(
     skip_pylint: bool,
     skip_code_checks: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     if not verbose:
         ic.disable()
@@ -854,7 +854,7 @@ def generate_readme(
     path: Path,
     verbose_inf: bool,
     dict_output: bool,
-    verbose: bool | int | float = False,
+    verbose: bool = False,
 ):
     if not verbose:
         ic.disable()
