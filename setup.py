@@ -6,7 +6,11 @@ from setuptools import setup
 
 import fastentrypoints
 
-dependencies = ["icecream", "click", "click-default-group"]
+dependencies = [
+    "icecream @ git+https://git@github.com/jakeogh/icecream",
+    "click",
+    "click-default-group",
+]
 
 config = {
     "version": "0.1",
