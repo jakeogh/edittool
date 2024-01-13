@@ -48,7 +48,7 @@ from byte_vector_replacer import get_pairs
 from click_default_group import DefaultGroup
 from clicktool import click_add_options
 from clicktool import click_global_options
-from clicktool import tv
+from clicktool import tvicgvd
 from configtool import click_read_config
 from eprint import eprint
 from gittool import unstaged_commits_exist
@@ -445,10 +445,12 @@ def cli(
     dict_output: bool,
     verbose: bool = False,
 ):
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
 
@@ -476,10 +478,12 @@ def isort(
     verbose: bool = False,
 ):
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
     for path in paths:
         isort_path(path=path)
@@ -745,7 +749,10 @@ def edit_file(
             else:
                 try:
                     help_command_result = help_command(
-                        "--help", _out=sys.stdout, _err=sys.stderr, _in=sys.stdin
+                        test_command_arg,
+                        _out=sys.stdout,
+                        _err=sys.stderr,
+                        _in=sys.stdin,
                     )
                 except ErrorReturnCode_1 as e:
                     if ignore_exit_code:
@@ -804,10 +811,12 @@ def edit(
         ic.disable()
 
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     if skip_code_checks:
@@ -860,10 +869,12 @@ def generate_readme(
         ic.disable()
 
     not_root()
-    tty, verbose = tv(
+    tty, verbose = tvicgvd(
         ctx=ctx,
         verbose=verbose,
         verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
     )
 
     path = Path(os.fsdecode(path)).expanduser().resolve()
