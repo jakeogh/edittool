@@ -227,6 +227,7 @@ def autogenerate_readme(
         test_command_arg,
         dont_reformat,
         install_command,
+        skip_test,
     ) = parse_edit_config(
         path=path,
     )
@@ -748,24 +749,25 @@ def edit_file(
                     f"{group}/{short_package}",
                     _fg=True,
                 )
-            try:
-                help_command = sh.Command(short_package)
-            except sh.CommandNotFound as e:
-                ic(e)
-            else:
+            if not skip_test:
                 try:
-                    help_command_result = help_command(
-                        test_command_arg,
-                        _out=sys.stdout,
-                        _err=sys.stderr,
-                        _in=sys.stdin,
-                    )
-                except ErrorReturnCode_1 as e:
-                    if ignore_exit_code:
-                        ic(e)
-                    else:
-                        ic(ignore_exit_code)
-                        raise e
+                    help_command = sh.Command(short_package)
+                except sh.CommandNotFound as e:
+                    ic(e)
+                else:
+                    try:
+                        help_command_result = help_command(
+                            test_command_arg,
+                            _out=sys.stdout,
+                            _err=sys.stderr,
+                            _in=sys.stdin,
+                        )
+                    except ErrorReturnCode_1 as e:
+                        if ignore_exit_code:
+                            ic(e)
+                        else:
+                            ic(ignore_exit_code)
+                            raise e
 
 
 @cli.command()
