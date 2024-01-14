@@ -167,6 +167,7 @@ def parse_edit_config(
     test_command_arg = None
     dont_reformat = None
     install_command = None
+    skip_test = None
     for item in edit_config_content:
         # ic(item)
         if not short_package:
@@ -181,6 +182,8 @@ def parse_edit_config(
             dont_reformat = parse_sh_var(item=item, var_name="dont_reformat")
         if not install_command:
             install_command = parse_sh_var(item=item, var_name="install_command")
+        if not skip_test:
+            skip_test = parse_sh_var(item=item, var_name="skip_test")
 
     ic(short_package)
     ic(group)
@@ -188,6 +191,7 @@ def parse_edit_config(
     ic(test_command_arg)
     ic(dont_reformat)
     ic(install_command)
+    ic(skip_test)
 
     return (
         edit_config,
@@ -197,6 +201,7 @@ def parse_edit_config(
         test_command_arg,
         dont_reformat,
         install_command,
+        skip_test,
     )
 
 
@@ -543,6 +548,7 @@ def edit_file(
             test_command_arg,
             dont_reformat,
             install_command,
+            skip_test,
         ) = parse_edit_config(
             path=path,
         )
