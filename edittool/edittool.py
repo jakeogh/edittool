@@ -570,10 +570,21 @@ def edit_file(
             skip_isort=skip_isort,
         )
 
-    if not skip_text_replace:
-        run_byte_vector_replacer(
-            ctx=ctx,
-            path=path,
+    if path.as_posix().endswith(".py"):
+        if not skip_text_replace:
+            run_byte_vector_replacer(
+                ctx=ctx,
+                path=path,
+            )
+    if path.as_posix().endswith(".zig"):
+        splint_command = sh.Command("zig")
+        splint_result = splint_command(
+            "fmt",
+            path,
+            _out=sys.stdout,
+            _err=sys.stderr,
+            _in=sys.stdin,
+            _tee=True,
         )
 
     pre_edit_hash = sha3_256_hash_file(path=path)
