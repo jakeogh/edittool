@@ -687,6 +687,17 @@ def edit_file(
                 _ok_code=[0, 1],
             )
 
+        elif path.as_posix().endswith(".zig"):
+            splint_command = sh.Command("zig")
+            splint_result = splint_command(
+                "fmt",
+                path,
+                _out=sys.stdout,
+                _err=sys.stderr,
+                _in=sys.stdin,
+                _tee=True,
+            )
+
         elif path.as_posix().endswith(".sh"):
             shellcheck_command = sh.Command("shellcheck")
             shellcheck_result = shellcheck_command(
