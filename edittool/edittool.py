@@ -147,7 +147,6 @@ def parse_sh_var(*, item, var_name):
 def parse_edit_config(
     *,
     path: Path,
-    verbose: bool = False,
 ):
     edit_config = walkup_until_found(
         path=path.parent,
@@ -208,7 +207,6 @@ def parse_edit_config(
 def autogenerate_readme(
     *,
     path: Path,
-    verbose: bool = False,
 ):
     try:
         autogenerate_readme_script = walkup_until_found(
@@ -359,7 +357,6 @@ def run_pylint(
     *,
     path: Path,
     ignore_pylint: bool,
-    verbose: bool = False,
 ):
     # pylint: disable=too-many-function-args
     git_py_files = " ".join(sh.git("ls-files", "*.py").strip().split("\n"))
@@ -395,7 +392,6 @@ def run_byte_vector_replacer(
     *,
     ctx,
     path: Path,
-    verbose: bool = False,
 ) -> None:
     pair_dict = get_pairs()
     try:
@@ -406,7 +402,6 @@ def run_byte_vector_replacer(
 
 def isort_path(
     path: Path,
-    verbose: bool = False,
 ) -> None:
     sh.isort(
         "--remove-redundant-aliases",
@@ -423,7 +418,6 @@ def isort_path(
 
 def black_path(
     path: Path,
-    verbose: bool = False,
 ) -> None:
     guard = b"# disable: black\n"
     ic(guard)
@@ -435,65 +429,6 @@ def black_path(
     sh.black(
         path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin
     )  # https://github.com/psf/black
-
-
-@click.group(
-    context_settings=CONTEXT_SETTINGS,
-    cls=DefaultGroup,
-    default="edit",
-    default_if_no_args=True,
-)
-@click_add_options(click_global_options)
-@click.pass_context
-def cli(
-    ctx,
-    verbose_inf: bool,
-    dict_output: bool,
-    verbose: bool = False,
-):
-    tty, verbose = tvicgvd(
-        ctx=ctx,
-        verbose=verbose,
-        verbose_inf=verbose_inf,
-        ic=ic,
-        gvd=gvd,
-    )
-
-
-def autoformat_python(
-    path: Path,
-    skip_black: bool,
-    skip_isort: bool,
-    verbose: bool = False,
-):
-    if not skip_black:
-        black_path(path=path)
-    if not skip_isort:
-        isort_path(path=path)
-
-
-@cli.command()
-@click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
-@click_add_options(click_global_options)
-@click.pass_context
-def isort(
-    ctx,
-    paths: tuple[Path, ...],
-    verbose_inf: bool,
-    dict_output: bool,
-    verbose: bool = False,
-):
-    not_root()
-    tty, verbose = tvicgvd(
-        ctx=ctx,
-        verbose=verbose,
-        verbose_inf=verbose_inf,
-        ic=ic,
-        gvd=gvd,
-    )
-    for path in paths:
-        isort_path(path=path)
-
 
 def edit_file(
     *,
@@ -507,7 +442,6 @@ def edit_file(
     skip_text_replace: bool,
     non_interactive: bool,
     ignore_exit_code: bool,
-    verbose: bool = False,
 ) -> None:
     path = path.resolve()
     if not path.is_file():
@@ -533,8 +467,7 @@ def edit_file(
             editor = _editor
         del _editor
 
-    if verbose:
-        ic(editor, path)
+    ic(editor, path)
 
     project_folder = None
     group = None
@@ -791,6 +724,65 @@ def edit_file(
                             ic(ignore_exit_code)
                             raise e
 
+@click.group(
+    context_settings=CONTEXT_SETTINGS,
+    cls=DefaultGroup,
+    default="edit",
+    default_if_no_args=True,
+)
+@click_add_options(click_global_options)
+@click.pass_context
+def cli(
+    ctx,
+    verbose_inf: bool,
+    dict_output: bool,
+    verbose: bool = False,
+):
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
+
+
+def autoformat_python(
+    path: Path,
+    skip_black: bool,
+    skip_isort: bool,
+    verbose: bool = False,
+):
+    if not skip_black:
+        black_path(path=path)
+    if not skip_isort:
+        isort_path(path=path)
+
+
+@cli.command()
+@click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
+@click_add_options(click_global_options)
+@click.pass_context
+def isort(
+    ctx,
+    paths: tuple[Path, ...],
+    verbose_inf: bool,
+    dict_output: bool,
+    verbose: bool = False,
+):
+    not_root()
+    tty, verbose = tvicgvd(
+        ctx=ctx,
+        verbose=verbose,
+        verbose_inf=verbose_inf,
+        ic=ic,
+        gvd=gvd,
+    )
+    for path in paths:
+        isort_path(path=path)
+
+
+
 
 @cli.command()
 @click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
@@ -799,11 +791,7 @@ def edit_file(
 @click.option("--github-user", type=str, required=True)
 @click.option(
     "--license",
-    type=click.Choice(
-        license_list(
-            verbose=False,
-        )
-    ),
+    type=click.Choice(license_list()),
     default="ISC",
 )
 @click.option("--disable-change-detection", is_flag=True)
