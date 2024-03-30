@@ -65,6 +65,7 @@ logging.basicConfig(level=logging.INFO)
 signal(SIGPIPE, SIG_DFL)
 
 # pylint: disable=no-name-in-module  # E0611 # No name 'ErrorReturnCode_1' in module 'sh'
+from sh import CommandNotFound
 from sh import ErrorReturnCode_1
 
 # pylint: enable=no-name-in-module
@@ -679,7 +680,7 @@ def edit_file(
                 "--cached", "--exit-code"
             )
             ic(staged_but_uncomitted_changes_exist_command)
-        except sh.ErrorReturnCode_1:
+        except ErrorReturnCode_1:
             icp("comitting")
             sh.git.add("-u")  # all tracked files
             sh.git.commit("--verbose", "-m", "auto-commit")
@@ -708,7 +709,7 @@ def edit_file(
             if not skip_test:
                 try:
                     help_command = sh.Command(short_package)
-                except sh.CommandNotFound as e:
+                except CommandNotFound as e:
                     ic(e)
                 else:
                     try:
