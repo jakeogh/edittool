@@ -53,7 +53,7 @@ from configtool import click_read_config
 from eprint import eprint
 from gittool import unstaged_commits_exist
 from hashtool import sha3_256_hash_file
-from licenseguesser import license_list
+from licenseguesser import build_license_list
 from portagetool import package_atom_installed
 from unmp import unmp
 from walkup_until_found import walkup_until_found
@@ -158,7 +158,7 @@ def parse_edit_config(
         edit_config_content = fh.read()
 
     # ic(edit_config_content)
-    edit_config_content = edit_config_content.splitlines()
+    edit_config_content_list = edit_config_content.splitlines()
     # ic(edit_config_content)
     short_package = None
     group = None
@@ -167,7 +167,7 @@ def parse_edit_config(
     dont_reformat = None
     install_command = None
     skip_test = None
-    for item in edit_config_content:
+    for item in edit_config_content_list:
         # ic(item)
         if not short_package:
             short_package = parse_sh_var(item=item, var_name="short_package")
@@ -430,6 +430,7 @@ def black_path(
         path, _out=sys.stdout, _err=sys.stderr, _in=sys.stdin
     )  # https://github.com/psf/black
 
+
 def edit_file(
     *,
     ctx,
@@ -679,7 +680,7 @@ def edit_file(
             )
             ic(staged_but_uncomitted_changes_exist_command)
         except sh.ErrorReturnCode_1:
-            ic("comitting")
+            icp("comitting")
             sh.git.add("-u")  # all tracked files
             sh.git.commit("--verbose", "-m", "auto-commit")
             if remote and Path(edit_config.parent / Path(".push")).is_file():
@@ -687,10 +688,10 @@ def edit_file(
                     sh.git.push()
                     sh.sudo.emaint("sync", "-A", _fg=True)
                 except sh.ErrorReturnCode_128 as e:
-                    ic(e)
-                    ic(e.stdout)
-                    ic(e.stderr)
-                    ic("remote not found")
+                    icp(e)
+                    icp(e.stdout)
+                    icp(e.stderr)
+                    icp("remote not found")
 
             else:
                 ic(".push not found: push is not enabled, changes comitted locally")
@@ -723,6 +724,7 @@ def edit_file(
                         else:
                             ic(ignore_exit_code)
                             raise e
+
 
 @click.group(
     context_settings=CONTEXT_SETTINGS,
@@ -782,8 +784,6 @@ def isort(
         isort_path(path=path)
 
 
-
-
 @cli.command()
 @click.argument("paths", type=click.Path(path_type=Path), nargs=-1)
 @click.option("--apps-folder", type=str, required=True)
@@ -791,7 +791,7 @@ def isort(
 @click.option("--github-user", type=str, required=True)
 @click.option(
     "--license",
-    type=click.Choice(license_list()),
+    type=click.Choice(build_license_list()),
     default="ISC",
 )
 @click.option("--disable-change-detection", is_flag=True)
